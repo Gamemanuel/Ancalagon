@@ -152,7 +152,7 @@ Make sure your PR:
 > **Important:** Always make sure the base repository is `Gamemanuel/AluminumDecoded`, not the FIRST upstream repository. We don't want to accidentally submit our team code to the official FTC SDK!
 
 <details>
-<summary>❌ Common Mistakes to Avoid</summary>
+<summary>Common Mistakes to Avoid</summary>
 
 - **Don't** create a PR to the FIRST Tech Challenge repository
 - **Don't** merge directly to `main` without a review
@@ -369,7 +369,7 @@ Having trouble? Here's how to get help:
 This project is dual-licensed:
 
 - **TeamCode folder:** [MIT License](https://github.com/Gamemanuel/AluminumDecoded/blob/main/LICENSE)
-- **Root directory (FTC SDK):** [BSD 3-Clause Clear License](https://github.com/Gamemanuel/AluminumDecoded/blob/main/LICENCE)
+- **Root directory (FTC SDK):** [BSD 3-Clause License](https://github.com/Gamemanuel/AluminumDecoded/blob/main/LICENCE)
 
 ---
 
