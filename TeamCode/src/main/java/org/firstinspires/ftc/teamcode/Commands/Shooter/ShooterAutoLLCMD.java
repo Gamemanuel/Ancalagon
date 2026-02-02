@@ -1,6 +1,5 @@
-package org.firstinspires.ftc.teamcode.Commands.shooter;
+package org.firstinspires.ftc.teamcode.Commands.Shooter;
 
-import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.solversLibComponents.InterpLUT.InterpLUT;
 import org.firstinspires.ftc.teamcode.subsystems.LLSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;

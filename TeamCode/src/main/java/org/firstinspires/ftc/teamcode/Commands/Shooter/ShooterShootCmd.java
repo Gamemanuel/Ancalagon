@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Commands.shooter;
+package org.firstinspires.ftc.teamcode.Commands.Shooter;
 
 
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
