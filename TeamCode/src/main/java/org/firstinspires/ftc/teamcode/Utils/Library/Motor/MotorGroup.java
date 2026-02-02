@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Utils.Motor;
+package org.firstinspires.ftc.teamcode.Utils.Library.Motor;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -9,7 +9,7 @@ public class MotorGroup {
     // defines the motors that we use locally and are instated when we call the class.
     private final DcMotorEx Leader;
     private final DcMotorEx Follower;
-    private positionType positionType = org.firstinspires.ftc.teamcode.Utils.Motor.positionType.LEADER;
+    private PositionType positionType = org.firstinspires.ftc.teamcode.Utils.Library.Motor.PositionType.LEADER;
 
     /**
      * Creates a motor group with the leader and follower motors that preform the same action as the
@@ -67,21 +67,21 @@ public class MotorGroup {
 
     /**
      * Sets the behavior for how MotorGroup gets encoder position.
-     * @see positionType
+     * @see PositionType
      */
-    public void setPositionType(positionType type) {
+    public void setPositionType(PositionType type) {
         positionType = type;
     }
 
     /**
-     * @return The position of the MotorGroup. Dependent on {@link positionType}.
+     * @return The position of the MotorGroup. Dependent on {@link PositionType}.
      */
     public double getPosition() {
-        if (positionType == org.firstinspires.ftc.teamcode.Utils.Motor.positionType.AVERAGE) {
+        if (positionType == org.firstinspires.ftc.teamcode.Utils.Library.Motor.PositionType.AVERAGE) {
             return (Leader.getCurrentPosition() + Follower.getCurrentPosition()) * 0.5;
-        } else if (positionType == org.firstinspires.ftc.teamcode.Utils.Motor.positionType.LEADER) {
+        } else if (positionType == org.firstinspires.ftc.teamcode.Utils.Library.Motor.PositionType.LEADER) {
             return Leader.getCurrentPosition();
-        } else if (positionType == org.firstinspires.ftc.teamcode.Utils.Motor.positionType.FOLLOWER) {
+        } else if (positionType == org.firstinspires.ftc.teamcode.Utils.Library.Motor.PositionType.FOLLOWER) {
             return Follower.getCurrentPosition();
         } else {
             return 0;
