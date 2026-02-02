@@ -18,9 +18,14 @@ Once you have downloaded and uncompressed (if needed) your folder, you can use A
 > [!TIP]
 > ## Git Functions that are nice
 > 
-> Remove uncommitted changes
+> Remove uncommitted changes in tracked files
 > ```bash
-> git clear
+> git restore .
+> ```
+> 
+> Remove untracked files and directories
+> ```bash
+> git clean -fd
 > ```
 
 ## Licences
