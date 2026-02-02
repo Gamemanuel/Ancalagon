@@ -15,6 +15,14 @@ git clone https://github.com/Gamemanuel/AluminumDecoded.git
 
 Once you have downloaded and uncompressed (if needed) your folder, you can use Android Studio to import the folder
 
+> [!TIP]
+> ## Git Functions that are nice
+> 
+> Remove uncommited changes
+> ```bash
+> git clear
+> ```
+
 ## Licences
 there are 2 licences to this project.
 
