@@ -1,17 +1,16 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.DriverControl.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Alliance;
+import org.firstinspires.ftc.teamcode.Utils.Alliance;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import org.firstinspires.ftc.teamcode.commands.shooter.ShooterAutoLLCMD;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.LLSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.TurretSubsystem;
-import org.firstinspires.ftc.teamcode.commands.turret.TurretAutoLLCMD;
+import org.firstinspires.ftc.teamcode.Commands.Shooter.ShooterAutoLLCMD;
+import org.firstinspires.ftc.teamcode.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
+import org.firstinspires.ftc.teamcode.Subsystems.LLSubsystem;
+import org.firstinspires.ftc.teamcode.Subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.Subsystems.TurretSubsystem;
+import org.firstinspires.ftc.teamcode.Commands.Turret.TurretAutoLLCMD;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 public abstract class TeleOp extends OpMode {
 
@@ -20,7 +19,7 @@ public abstract class TeleOp extends OpMode {
     TurretSubsystem turretSubsystem;
     LLSubsystem ll;
     TurretAutoLLCMD turretAuto;
-    ShooterSubsystem shooterSubsystem;
+    ShooterSubsystem shooter;
     ShooterAutoLLCMD shooterAutoCmd;
 
     private final Alliance alliance;
@@ -39,18 +38,17 @@ public abstract class TeleOp extends OpMode {
         turretSubsystem = new TurretSubsystem(hardwareMap, alliance);
         ll = new LLSubsystem(hardwareMap, alliance);
 
-        shooterSubsystem = new ShooterSubsystem(hardwareMap);
+        shooter = new ShooterSubsystem(hardwareMap);
 
         // Initialize commands
         turretAuto = new TurretAutoLLCMD(turretSubsystem, ll);
-        shooterAutoCmd = new ShooterAutoLLCMD(shooterSubsystem, ll);
+        shooterAutoCmd = new ShooterAutoLLCMD(shooter, ll);
 
     }
 
     public void loop() {
         // run the ll loop every loop
         ll.periodic();
-
         // 1. DRIVETRAIN
         drivetrain.Drive(gamepad1.left_stick_y, gamepad1.right_stick_x);
 
@@ -70,25 +68,21 @@ public abstract class TeleOp extends OpMode {
             turretAuto.faceAprilTag(1.5, alliance);
         }
 
-//        if (gamepad2.right_stick_y != 0) {
-//             //Manual Rev (optional override)
-//
-//            shooter.shooter.setPower(gamepad2.right_stick_y); // Set a static speed for manual
-//        } else {
-//             //AUTOMATIC DISTANCE SETTING
-//             //This checks Limelight Area (ta) and sets target velocity using your LUT
-//            shooterAutoCmd.execute();
-//        }
-
-        // run the auto aim code
-        shooterAutoCmd.execute();
+        if (gamepad2.right_stick_y != 0) {
+            // Manual Rev (optional override)
+            shooter.shooter.setPower(gamepad2.right_stick_y); // Set a static speed for manual
+        } else {
+            // AUTOMATIC DISTANCE SETTING
+            // This checks Limelight Area (ta) and sets target velocity using your LUT
+            shooterAutoCmd.execute();
+        }
 
         // 2. Run the Periodic loop (Calculates PID + Feedforward)
-        shooterSubsystem.periodic();
+        shooter.periodic();
 
         // 5. TELEMETRY
-        telemetry.addData("Shooter Target", shooterSubsystem.getTargetVelocity());
-        telemetry.addData("Shooter Actual", shooterSubsystem.shooter.getVelocity());
+        telemetry.addData("Shooter Target", shooter.getTargetVelocity());
+        telemetry.addData("Shooter Actual", shooter.shooter.getVelocity());
         telemetry.update();
     }
 }
