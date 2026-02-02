@@ -11,6 +11,16 @@ public class Drivetrain {
     public MotorGroup leftSide, rightSide;
     public SixWheelCMD cmd;
     public Imu imu;
+
+    // CPR (counts per motor revolution) calculations
+    static final double     COUNTS_PER_MOTOR_REV    = 28.0;
+    static final double     DRIVE_GEAR_REDUCTION    = 29.7;
+    static final double     COUNTS_PER_WHEEL_REV    = COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION;
+
+    // RPM calculations
+    static final double     MOTOR_FREE_SPEED        = 6000;
+    static final double     THEORETICAL_RPM         = MOTOR_FREE_SPEED / DRIVE_GEAR_REDUCTION;
+
     public Drivetrain(HardwareMap hMap) {
         // We are defining the motors here:
         // Left side of the robot
