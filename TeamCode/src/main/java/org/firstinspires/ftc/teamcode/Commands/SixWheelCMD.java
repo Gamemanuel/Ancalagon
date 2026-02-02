@@ -6,6 +6,9 @@ public class SixWheelCMD {
 
     Drivetrain drivetrain;
 
+    public SixWheelCMD(Drivetrain drivetrain) {
+        this.drivetrain = drivetrain;
+    }
     /**
      * A basic command that runs the drivetrain for a specified amount of time and then stops.
      *
