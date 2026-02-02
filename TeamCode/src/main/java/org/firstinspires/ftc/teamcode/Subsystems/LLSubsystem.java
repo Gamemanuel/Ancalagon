@@ -48,7 +48,7 @@ public class LLSubsystem {
 
         if (result != null && result.isValid()) {
             FtcDashboard.getInstance().getTelemetry().addData("LL AprilTag tA", result.getTa());
-            FtcDashboard.getInstance().getTelemetry().addData("LL AprilTag tX", result.getTy());
+            FtcDashboard.getInstance().getTelemetry().addData("LL AprilTag tX", result.getTx());
             FtcDashboard.getInstance().getTelemetry().addData("Distance in", getDistanceInches());
         } else {
             FtcDashboard.getInstance().getTelemetry().addData("Limelight", "No Targets");
