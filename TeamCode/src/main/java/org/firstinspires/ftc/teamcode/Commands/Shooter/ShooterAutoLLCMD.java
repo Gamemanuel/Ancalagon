@@ -24,18 +24,6 @@ public class ShooterAutoLLCMD {
         VelocityLUT.add(109,-1424);
         VelocityLUT.add(120,-1468);
 
-
-        // 1. Close Range (e.g., 4 feet)
-//        VelocityLUT.add(24, -1000);
-//        VelocityLUT.add(36, -1015);
-//        VelocityLUT.add(48, -1025);
-//        VelocityLUT.add(60, -1045);
-//        VelocityLUT.add(72, -1175);
-//        VelocityLUT.add(84, -1200);
-//        VelocityLUT.add(96, -1320);
-//        VelocityLUT.add(108, -1360);
-//        VelocityLUT.add(120, -1525);
-
         // 4. Maximum Range Cap (If we see something extremely far)
         VelocityLUT.add(8000, -3000);
 
