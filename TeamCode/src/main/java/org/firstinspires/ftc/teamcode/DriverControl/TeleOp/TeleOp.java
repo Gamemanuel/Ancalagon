@@ -12,6 +12,11 @@ public abstract class TeleOp extends OpMode {
 
     private final Alliance alliance;
 
+    // Manual override flag for the shooter
+    private boolean shooterManualOverride = false;
+    // To detect button press (rising edge)
+    private boolean lastYButtonState = false;
+
     public TeleOp(Alliance alliance) {
         this.alliance = alliance;
     }
@@ -27,14 +32,14 @@ public abstract class TeleOp extends OpMode {
     public void loop() {
         // run the ll loop every loop
         robot.ll.periodic();
-        // 1. DRIVETRAIN
+        // Drivetrain
         robot.drivetrain.arcadeDrive(gamepad1.left_stick_y, gamepad1.right_stick_x);
 
-        // 2. INTAKE
+        // Intake
         robot.intake.front.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
         robot.intake.floop.setPosition(-gamepad2.left_stick_y * 0.75);
 
-        // 3. TURRET LOGIC
+        // Turret Logic
         // Manual override triggers
         if (gamepad2.right_bumper) {
             robot.turretSubsystem.setPower(-0.5);
@@ -46,19 +51,30 @@ public abstract class TeleOp extends OpMode {
             robot.turretAuto.faceAprilTag(1.5, alliance);
         }
 
-        if (gamepad2.right_stick_y != 0) {
-            // Manual Rev (optional override)
-            robot.shooter.shooter.setPower(gamepad2.right_stick_y); // Set a static speed for manual
+        // Shooter Logic
+
+        // Toggle Manual override with Y button on gamepad2
+        if (gamepad2.y && !lastYButtonState); {
+            shooterManualOverride = !shooterManualOverride;
+        }
+        lastYButtonState = gamepad2.y;
+
+        if (shooterManualOverride) {
+            // Manual mode:
+
+            robot.shooter.shooter.setPower(-gamepad2.left_stick_y);
         } else {
-            // AUTOMATIC DISTANCE SETTING
-            // This checks Limelight Area (ta) and sets target velocity using your LUT
+            // Enable Automatic Mode:
+
+            // Run the auto subsystem
             robot.shooterAutoCmd.execute();
+
+            // Run the Periodic loop (Calculates PID + Feedforward)
+            robot.shooter.periodic();
         }
 
-        // 2. Run the Periodic loop (Calculates PID + Feedforward)
-        robot.shooter.periodic();
-
         // 5. TELEMETRY
+        telemetry.addData("Shooter Mode", shooterManualOverride ? "MANUAL" : "AUTO");
         telemetry.addData("Shooter Target", robot.shooter.getTargetVelocity());
         telemetry.addData("Shooter Actual", robot.shooter.shooter.getVelocity());
         telemetry.update();
