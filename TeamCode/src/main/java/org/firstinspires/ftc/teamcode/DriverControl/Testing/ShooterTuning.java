@@ -17,16 +17,15 @@ public class ShooterTuning extends LinearOpMode {
 
     // Tuning variable visible in Dashboard
     public static double TESTING_TARGET_RPM = 1500;
+    public static Alliance TEST_ALLIANCE = Alliance.RED;
 
     @Override
     public void runOpMode() {
         // Connect to Dashboard Telemetry
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        robot = new Robot(hardwareMap, Alliance.RED);
-
-        telemetry.addLine("Ready to Tune. Open FTC Dashboard (192.168.43.1:8080)");
-        telemetry.update();
+        // Init Subsystems
+        robot = new Robot(hardwareMap, TEST_ALLIANCE);
 
         waitForStart();
 
@@ -34,13 +33,11 @@ public class ShooterTuning extends LinearOpMode {
             // run the ll loop every loop
             robot.ll.periodic();
 
-            telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
             // 1. Set the target velocity from the Dashboard variable
             robot.shooter.setTargetVelocity(TESTING_TARGET_RPM);
             robot.intake.front.setPower(-1);
 
-            robot.turretAuto.faceAprilTag(1.5, Alliance.BLUE);
+            robot.turretAuto.faceAprilTag(1.5, TEST_ALLIANCE);
 
             // 2. Run the Periodic loop (Calculates PID + Feedforward)
             robot.shooter.periodic();
