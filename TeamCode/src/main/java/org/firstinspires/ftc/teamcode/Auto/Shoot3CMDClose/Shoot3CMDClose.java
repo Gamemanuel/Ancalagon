@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.LLSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.TurretSubsystem;
+import org.firstinspires.ftc.teamcode.Utils.Robot;
 
 @Config
 public abstract class Shoot3CMDClose extends LinearOpMode {
@@ -32,13 +33,7 @@ public abstract class Shoot3CMDClose extends LinearOpMode {
     public static final double TURRET_TOLERANCE = 1.5;
     public static final double TURRET_SHOOT_SPEED = 0.2;
 
-    ShooterSubsystem shooter;
-    Intake intake;
-    LLSubsystem ll;
-    Drivetrain drivetrain;
-    TurretSubsystem turretSubsystem;
-    TurretAutoLLCMD turretAuto;
-    ShooterAutoLLCMD shooterAutoCmd;
+    Robot robot;
 
     private final Alliance alliance;
 
@@ -49,17 +44,9 @@ public abstract class Shoot3CMDClose extends LinearOpMode {
     @Override
     public void runOpMode() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        robot = new Robot(hardwareMap, alliance);
 
-        drivetrain = new Drivetrain(hardwareMap);
-        intake = new Intake(hardwareMap);
-        turretSubsystem = new TurretSubsystem(hardwareMap, alliance);
-        ll = new LLSubsystem(hardwareMap, alliance);
-        shooter = new ShooterSubsystem(hardwareMap);
-
-        turretAuto = new TurretAutoLLCMD(turretSubsystem, ll);
-        shooterAutoCmd = new ShooterAutoLLCMD(shooter, ll);
-
-        intake.floop.setPosition(FLIPPER_STOW_POS);
+        robot.intake.floop.setPosition(FLIPPER_STOW_POS);
 
         waitForStart();
 
@@ -68,14 +55,14 @@ public abstract class Shoot3CMDClose extends LinearOpMode {
         // =================================================================
         // PHASE 1: Drive to Position
         // =================================================================
-        while (ll.getDistanceInches() > TARGET_DISTANCE_INCHES && opModeIsActive()) {
-            drivetrain.arcadeDrive(DRIVE_POWER, 0);
+        while (robot.ll.getDistanceInches() > TARGET_DISTANCE_INCHES && opModeIsActive()) {
+            robot.drivetrain.arcadeDrive(DRIVE_POWER, 0);
             runSubsystems(); // Updates PID and Vision
             telemetry.addData("Phase", "1. Driving");
-            telemetry.addData("Distance", ll.getDistanceInches());
+            telemetry.addData("Distance", robot.ll.getDistanceInches());
             telemetry.update();
         }
-        drivetrain.arcadeDrive(0, 0);
+        robot.drivetrain.arcadeDrive(0, 0);
 
         // =================================================================
         // PHASE 2: Wait for Speed
@@ -86,8 +73,8 @@ public abstract class Shoot3CMDClose extends LinearOpMode {
         while (opModeIsActive() && System.currentTimeMillis() < startTime + timeout) {
             runSubsystems(); // Updates PID and Vision
 
-            double target = shooter.getTargetVelocity();
-            double actual = shooter.shooter.getVelocity();
+            double target = robot.shooter.getTargetVelocity();
+            double actual = robot.shooter.shooter.getVelocity();
 
             if (Math.abs(target - actual) <= SHOOTER_TOLERANCE) {
                 break;
@@ -103,7 +90,7 @@ public abstract class Shoot3CMDClose extends LinearOpMode {
         safeWait(8000);
         safeWait(PUSH_DURATION_MS);
         if (opModeIsActive()) {
-            intake.front.setPower(-1.0);
+            robot.intake.front.setPower(-1.0);
 
             for (int i = 1; i <= 3; i++) {
                 if (!opModeIsActive()) break;
@@ -116,28 +103,28 @@ public abstract class Shoot3CMDClose extends LinearOpMode {
                     safeWait(PUSH_DURATION_MS);
                 } else {
                     // Ball 3: Push with flipper
-                    intake.floop.setPosition(FLIPPER_SHOOT_POS);
+                    robot.intake.floop.setPosition(FLIPPER_SHOOT_POS);
                     safeWait(PUSH_DURATION_MS);
-                    intake.floop.setPosition(FLIPPER_STOW_POS);
+                    robot.intake.floop.setPosition(FLIPPER_STOW_POS);
                 }
 
                 // --- RECOVERY ---
-                intake.front.setPower(0); // Stop feeding
+                robot.intake.front.setPower(0); // Stop feeding
 
                 // 1. Wait for the fixed delay (keeping PID active!)
                 safeWait(SHOT_DELAY_MS);
 
                 // 2. (Optional but Recommended) Wait until velocity recovers exactly
-                while (Math.abs(shooter.getTargetVelocity() - shooter.shooter.getVelocity()) > SHOOTER_TOLERANCE && opModeIsActive()) {
+                while (Math.abs(robot.shooter.getTargetVelocity() - robot.shooter.shooter.getVelocity()) > SHOOTER_TOLERANCE && opModeIsActive()) {
                     runSubsystems();
                     telemetry.addData("Phase", "Recovering Speed...");
-                    telemetry.addData("Err", shooter.getTargetVelocity() - shooter.shooter.getVelocity());
+                    telemetry.addData("Err", robot.shooter.getTargetVelocity() - robot.shooter.shooter.getVelocity());
                     telemetry.update();
                 }
 
                 // Turn intake back on for the next ball
                 if (i < 3) {
-                    intake.front.setPower(-1.0);
+                    robot.intake.front.setPower(-1.0);
                 }
             }
         }
@@ -145,20 +132,20 @@ public abstract class Shoot3CMDClose extends LinearOpMode {
         // =================================================================
         // PHASE 4: Stop
         // =================================================================
-        intake.front.setPower(0);
-        intake.floop.setPosition(FLIPPER_STOW_POS);
-        shooter.setTargetVelocity(0);
-        turretSubsystem.setPower(0);
-        drivetrain.arcadeDrive(0,0);
+        robot.intake.front.setPower(0);
+        robot.intake.floop.setPosition(FLIPPER_STOW_POS);
+        robot.shooter.setTargetVelocity(0);
+        robot.turretSubsystem.setPower(0);
+        robot.drivetrain.arcadeDrive(0,0);
 
-        while (ll.getDistanceInches() < 69 && opModeIsActive() && ll.getDistanceInches() != 1000) {
-            drivetrain.arcadeDrive(DRIVE_POWER, 0);
+        while (robot.ll.getDistanceInches() < 69 && opModeIsActive() && robot.ll.getDistanceInches() != 1000) {
+            robot.drivetrain.arcadeDrive(DRIVE_POWER, 0);
             runSubsystems(); // Updates PID and Vision
             telemetry.addData("Phase", "1. Driving");
-            telemetry.addData("Distance", ll.getDistanceInches());
+            telemetry.addData("Distance", robot.ll.getDistanceInches());
             telemetry.update();
         }
-        drivetrain.arcadeDrive(0, 0);
+        robot.drivetrain.arcadeDrive(0, 0);
     }
 
     /**
@@ -175,9 +162,7 @@ public abstract class Shoot3CMDClose extends LinearOpMode {
      * Helper to keep all subsystems active
      */
     public void runSubsystems() {
-        ll.periodic();
-        shooterAutoCmd.execute();
-        shooter.periodic();
-        turretAuto.faceAprilTag(TURRET_TOLERANCE, alliance);
+        robot.runPeriodic();
+        robot.turretAuto.faceAprilTag(TURRET_TOLERANCE, alliance);
     }
 }
