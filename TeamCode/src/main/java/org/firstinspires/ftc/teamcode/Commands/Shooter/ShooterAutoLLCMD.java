@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.Commands.Shooter;
 
-import org.firstinspires.ftc.teamcode.Utils.SolversLib.InterpLUT.InterpLUT;
 import org.firstinspires.ftc.teamcode.Subsystems.LLSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.Utils.SolversLib.InterpLUT.InterpLUT;
 
 public class ShooterAutoLLCMD {
 
@@ -10,6 +10,8 @@ public class ShooterAutoLLCMD {
 
     static {
         // Format: VelocityLUT.add(Distance_Inches, Target_Velocity);
+
+        // Minimum range cap (If we see something really close)
         VelocityLUT.add(0,0);
 
         VelocityLUT.add(34.8,-950);
@@ -24,7 +26,7 @@ public class ShooterAutoLLCMD {
         VelocityLUT.add(109,-1424);
         VelocityLUT.add(120,-1468);
 
-        // 4. Maximum Range Cap (If we see something extremely far)
+        // Maximum Range Cap (If we see something extremely far)
         VelocityLUT.add(8000, -3000);
 
         VelocityLUT.createLUT();
@@ -42,17 +44,16 @@ public class ShooterAutoLLCMD {
         // Ensure we have a valid target
         if (LL.result != null && LL.result.isValid()) {
 
-            // 1. Get the distance from our new math method
+            // Get the distance from limelight
             double distanceInches = LL.getDistanceInches();
 
-            // 2. Safety check: Ensure distance is positive (valid)
+            // Make sure that distance is positive
             if(distanceInches > 0) {
 
-                // 3. Look up the velocity based on distance
+                // Calculate velocity based on distance
                 double targetVelocity = VelocityLUT.get(distanceInches);
 
-                // 4. Send to motor
-                // Note: Update the Range.clip numbers to match your min/max safe RPMs
+                // Send target to motor
                 subsystem.setTargetVelocity(targetVelocity);
             }
         }
