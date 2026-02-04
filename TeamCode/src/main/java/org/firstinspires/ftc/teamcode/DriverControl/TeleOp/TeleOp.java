@@ -46,7 +46,7 @@ public abstract class TeleOp extends OpMode {
         } else if (gamepad2.left_bumper) {
             robot.turretSubsystem.setPower(0.5);
         } else {
-            // AUTOMATIC TURRET TRACKING
+            // Auto Turret Tracking
             // Use a tolerance of 1.5 degrees
             robot.turretAuto.faceAprilTag(1.5, alliance);
         }
