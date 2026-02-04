@@ -5,14 +5,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Alliance;
-import org.firstinspires.ftc.teamcode.commands.shooter.ShooterAutoLLCMD;
-import org.firstinspires.ftc.teamcode.commands.turret.TurretAutoLLCMD;
-import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.LLSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.TurretSubsystem;
+import org.firstinspires.ftc.teamcode.Utils.Alliance;
+import org.firstinspires.ftc.teamcode.Commands.Shooter.ShooterAutoLLCMD;
+import org.firstinspires.ftc.teamcode.Commands.Turret.TurretAutoLLCMD;
+import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
+import org.firstinspires.ftc.teamcode.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.Subsystems.LLSubsystem;
+import org.firstinspires.ftc.teamcode.Subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.Subsystems.TurretSubsystem;
 
 @Config
 public abstract class Shoot3CMDWrightly extends LinearOpMode {
@@ -74,13 +74,13 @@ public abstract class Shoot3CMDWrightly extends LinearOpMode {
         // PHASE 1: Drive to Position
         // =================================================================
         while (ll.getDistanceInches() > TARGET_DISTANCE_INCHES && opModeIsActive()) {
-            drivetrain.Drive(DRIVE_POWER, 0);
+            drivetrain.arcadeDrive(DRIVE_POWER, 0);
             runSubsystems(); // Updates PID and Vision
             telemetry.addData("Phase", "1. Driving");
             telemetry.addData("Distance", ll.getDistanceInches());
             telemetry.update();
         }
-        drivetrain.Drive(0, 0);
+        drivetrain.arcadeDrive(0, 0);
 
         // Wait for speed.
 
@@ -158,7 +158,7 @@ public abstract class Shoot3CMDWrightly extends LinearOpMode {
         intake.floop.setPosition(FLIPPER_STOW_POS);
         shooter.setTargetVelocity(0);
         turretSubsystem.setPower(0);
-        drivetrain.Drive(0,0);
+        drivetrain.arcadeDrive(0,0);
     }
 
     /**

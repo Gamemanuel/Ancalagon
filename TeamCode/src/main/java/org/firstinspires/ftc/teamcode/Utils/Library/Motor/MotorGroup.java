@@ -3,13 +3,14 @@ package org.firstinspires.ftc.teamcode.Utils.Library.Motor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import org.firstinspires.ftc.teamcode.Utils.Library.Motor.PositionType;
 
 public class MotorGroup {
 
     // defines the motors that we use locally and are instated when we call the class.
     private final DcMotorEx Leader;
     private final DcMotorEx Follower;
-    private PositionType positionType = org.firstinspires.ftc.teamcode.Utils.Library.Motor.PositionType.LEADER;
+    private PositionType positionType = PositionType.LEADER;
 
     /**
      * Creates a motor group with the leader and follower motors that preform the same action as the
@@ -77,11 +78,11 @@ public class MotorGroup {
      * @return The position of the MotorGroup. Dependent on {@link PositionType}.
      */
     public double getPosition() {
-        if (positionType == org.firstinspires.ftc.teamcode.Utils.Library.Motor.PositionType.AVERAGE) {
+        if (positionType == PositionType.AVERAGE) {
             return (Leader.getCurrentPosition() + Follower.getCurrentPosition()) * 0.5;
-        } else if (positionType == org.firstinspires.ftc.teamcode.Utils.Library.Motor.PositionType.LEADER) {
+        } else if (positionType == PositionType.LEADER) {
             return Leader.getCurrentPosition();
-        } else if (positionType == org.firstinspires.ftc.teamcode.Utils.Library.Motor.PositionType.FOLLOWER) {
+        } else if (positionType == PositionType.FOLLOWER) {
             return Follower.getCurrentPosition();
         } else {
             return 0;
