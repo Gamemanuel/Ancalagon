@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Commands.Turret;
 
-import com.qualcomm.hardware.limelightvision.LLResult;
 import org.firstinspires.ftc.teamcode.Utils.Alliance;
+import com.qualcomm.hardware.limelightvision.LLResult;
 import org.firstinspires.ftc.teamcode.Subsystems.LLSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.TurretSubsystem;
 
@@ -10,13 +10,11 @@ public class TurretAutoLLCMD {
     TurretSubsystem turret;
     LLSubsystem ll;
 
-    // TUNING VALUES
-    // kP: How fast to turn per degree of error.
-    double kP = 0.02;
+    // Values that we tune:
+    double kP = 0.02; // kP: How fast to turn per degree of error
+    double kStatic = 0.15; // kStatic: Minimum power required to get the servo moving (overcome friction)
 
-    // kStatic: Minimum power required to get the servo moving (overcome friction)
-    double kStatic = 0.15;
-    public double offset;
+    public double offset; // init the offset var
 
     public TurretAutoLLCMD(TurretSubsystem turret, LLSubsystem ll) {
         this.turret = turret;
@@ -24,6 +22,7 @@ public class TurretAutoLLCMD {
     }
 
     public void faceAprilTag(double tolerance, Alliance alliance) {
+        // TODO:// make this offset system better
         // Switch pipeline based on alliance
         if (alliance == Alliance.RED) {
             ll.limelight.pipelineSwitch(3);
