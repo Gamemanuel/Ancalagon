@@ -45,7 +45,7 @@ public class Drivetrain {
     }
 
     public void arcadeDrive(double forward, double turn) {
-        cmd.setMotors(forward - turn, forward + turn);
+//        cmd.setMotors(forward - turn, forward + turn);
     }
     public void tankDrive(double left, double right) {
         cmd.setMotors(left, right);
