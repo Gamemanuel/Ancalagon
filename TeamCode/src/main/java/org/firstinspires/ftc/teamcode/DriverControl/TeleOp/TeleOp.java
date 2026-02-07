@@ -62,16 +62,15 @@ public abstract class TeleOp extends OpMode {
                 // Manual mode:
 
                 robot.shooter.shooter.setPower(-gamepad2.right_stick_y);
+            } else {
+                // Enable Automatic Mode:
+
+                // Run the auto subsystem
+                robot.shooterAutoCmd.execute();
+
+                // Run the Periodic loop (Calculates PID + Feedforward)
+                robot.shooter.periodic();
             }
-//            } else {
-//                // Enable Automatic Mode:
-//
-//                // Run the auto subsystem
-//                robot.shooterAutoCmd.execute();
-//
-//                // Run the Periodic loop (Calculates PID + Feedforward)
-//                robot.shooter.periodic();
-//            }
 
         // Telemetry
         telemetry.addData("Shooter Mode", shooterManualOverride ? "MANUAL" : "AUTO");
