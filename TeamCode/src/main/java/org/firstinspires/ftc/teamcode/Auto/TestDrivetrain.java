@@ -23,8 +23,6 @@ public class TestDrivetrain extends LinearOpMode {
             // voltage on the driver station and make sure the motors are configured correctly
 
             cmd.setMotors(1,1);
-
-
         }
         // if you press the controller button a then you stop all motors
         cmd.setMotors(0,0);
