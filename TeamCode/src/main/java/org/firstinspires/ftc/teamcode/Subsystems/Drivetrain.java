@@ -3,16 +3,13 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import org.firstinspires.ftc.teamcode.Commands.SixWheelCMD;
 import org.firstinspires.ftc.teamcode.Utils.Library.Motor.MotorGroup;
-import org.firstinspires.ftc.teamcode.Utils.Robot;
 
 import static java.lang.Thread.sleep;
 
 public class Drivetrain {
     public DcMotorEx frontLeft, backLeft, frontRight, backRight;
     public MotorGroup leftSide, rightSide;
-    public SixWheelCMD cmd;
     public Imu imu;
 
     // CPR (counts per motor revolution) calculations
@@ -45,7 +42,6 @@ public class Drivetrain {
                 DcMotorSimple.Direction.FORWARD,
                 DcMotorSimple.Direction.FORWARD
         );
-
 
     }
 
@@ -100,7 +96,7 @@ public class Drivetrain {
      *
      * @param left  left side of drivetrain
      * @param right right side of drivetrain
-     * @Creator Will (Finch)
+     * @Creator Will (Finch) updated by Gavin (Rappleye)
      */
     public void setMotors(float left, float right) {
         leftSide.setPower((double) left);
