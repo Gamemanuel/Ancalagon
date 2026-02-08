@@ -41,7 +41,7 @@ public class Robot {
         // 2. INITIALIZE SUBSYSTEMS
         drivetrain = new Drivetrain(hardwareMap);
         intake = new Intake(hardwareMap);
-        turretSubsystem = new TurretSubsystem(hardwareMap, alliance);
+        turretSubsystem = new TurretSubsystem(hardwareMap);
         ll = new LLSubsystem(hardwareMap, alliance);
         shooter = new ShooterSubsystem(hardwareMap);
 
