@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import static java.lang.Thread.sleep;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.Utils.Library.Motor.MotorGroup;
-
-import static java.lang.Thread.sleep;
 
 public class Drivetrain {
     public DcMotorEx frontLeft, backLeft, frontRight, backRight;
@@ -42,7 +41,6 @@ public class Drivetrain {
                 DcMotorSimple.Direction.FORWARD,
                 DcMotorSimple.Direction.FORWARD
         );
-
     }
 
     public void arcadeDrive(float forward, float turn) {
