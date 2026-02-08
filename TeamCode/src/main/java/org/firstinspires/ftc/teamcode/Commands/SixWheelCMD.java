@@ -17,7 +17,7 @@ public class SixWheelCMD {
      * @param right right side of drivetrain
      * @param time how long it runs
      */
-    public void driveBasic(double left, double right, long time) throws InterruptedException {
+    public void driveBasic(float left, float right, long time) throws InterruptedException {
         //set all motor powers
         setMotors(left,right);
         sleep(time); //wait for however long
@@ -32,8 +32,8 @@ public class SixWheelCMD {
      * @param left left side of drivetrain
      * @param right right side of drivetrain
      */
-    public void setMotors(double left, double right) {
-        drivetrain.leftSide.setPower(left);
-        drivetrain.rightSide.setPower(right);
+    public void setMotors(float left, float right) {
+        drivetrain.leftSide.setPower((double) left);
+        drivetrain.rightSide.setPower((double) right);
     }
 }

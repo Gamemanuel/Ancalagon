@@ -11,7 +11,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 public abstract class Shoot3CMD extends LinearOpMode {
 
     // --- TUNING CONSTANTS ---
-    public static double DRIVE_POWER = -0.34;
+    public static float DRIVE_POWER = -0.34f;
     public static final double TARGET_DISTANCE_INCHES = 69.0;
     public static final double SHOOTER_TOLERANCE = 2680.0;
     public static final long PUSH_DURATION_MS = 600;
@@ -204,7 +204,7 @@ public abstract class Shoot3CMD extends LinearOpMode {
             }
 
             // Apply Power (0 Forward, turnPower Turn)
-            robot.drivetrain.arcadeDrive(0, turnPower);
+            robot.drivetrain.arcadeDrive(0f, (float) turnPower);
 
             telemetry.addData("Phase", "5. Turning to Sample");
             telemetry.addData("Error (tx)", tx);

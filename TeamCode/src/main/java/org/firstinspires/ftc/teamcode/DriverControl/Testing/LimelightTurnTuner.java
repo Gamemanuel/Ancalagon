@@ -78,7 +78,7 @@ public class LimelightTurnTuner extends OpMode {
                 }
 
                 // 4. Execute Turn
-                robot.drivetrain.arcadeDrive(0, turnPower);
+                robot.drivetrain.arcadeDrive(0f, (float) turnPower);
             }
         } else {
             // Manual control when not turning

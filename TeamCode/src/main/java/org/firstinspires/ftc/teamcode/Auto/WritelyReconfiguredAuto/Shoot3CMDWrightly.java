@@ -11,7 +11,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 public abstract class Shoot3CMDWrightly extends LinearOpMode {
 
     // --- TUNING CONSTANTS ---
-    public static double DRIVE_POWER = 0.34;
+    public static float DRIVE_POWER = 0.34f;
     public static final double TARGET_DISTANCE_INCHES = 69.0;
     public static final double SHOOTER_TOLERANCE = 2380.0;
     public static final long PUSH_DURATION_MS = 600;
