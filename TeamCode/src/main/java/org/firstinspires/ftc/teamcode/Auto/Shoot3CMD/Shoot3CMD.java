@@ -48,13 +48,13 @@ public abstract class Shoot3CMD extends LinearOpMode {
         // PHASE 1: Drive to Position
         // =================================================================
         while (robot.ll.getDistanceInches() > TARGET_DISTANCE_INCHES && opModeIsActive()) {
-            robot.drivetrain.arcadeDrive(DRIVE_POWER, 0);
+            robot.sixWheelCMD.arcadeDrive(DRIVE_POWER, 0);
             runSubsystems(); // Updates PID and Vision
             telemetry.addData("Phase", "1. Driving");
             telemetry.addData("Distance", robot.ll.getDistanceInches());
             telemetry.update();
         }
-        robot.drivetrain.arcadeDrive(0, 0);
+        robot.sixWheelCMD.arcadeDrive(0, 0);
 
         // =================================================================
         // PHASE 2: Wait for Speed
@@ -127,16 +127,16 @@ public abstract class Shoot3CMD extends LinearOpMode {
         robot.intake.floop.setPosition(FLIPPER_STOW_POS);
         robot.shooter.setTargetVelocity(0);
         robot.turretSubsystem.setPower(0);
-        robot.drivetrain.arcadeDrive(0,0);
+        robot.sixWheelCMD.arcadeDrive(0,0);
 
         while (robot.ll.getDistanceInches() < 90 && opModeIsActive() && robot.ll.getDistanceInches() != 1000) {
-            robot.drivetrain.arcadeDrive(-DRIVE_POWER, 0);
+            robot.sixWheelCMD.arcadeDrive(-DRIVE_POWER, 0);
             runSubsystems(); // Updates PID and Vision
             telemetry.addData("Phase", "1. Driving");
             telemetry.addData("Distance", robot.ll.getDistanceInches());
             telemetry.update();
         }
-        robot.drivetrain.arcadeDrive(0, 0);
+        robot.sixWheelCMD.arcadeDrive(0, 0);
 
         // =================================================================
         // PHASE 5: Turn to Samples
@@ -204,7 +204,7 @@ public abstract class Shoot3CMD extends LinearOpMode {
             }
 
             // Apply Power (0 Forward, turnPower Turn)
-            robot.drivetrain.arcadeDrive(0f, (float) turnPower);
+            robot.sixWheelCMD.arcadeDrive(0f, (float) turnPower);
 
             telemetry.addData("Phase", "5. Turning to Sample");
             telemetry.addData("Error (tx)", tx);
@@ -213,6 +213,6 @@ public abstract class Shoot3CMD extends LinearOpMode {
         }
 
         // Stop
-        robot.drivetrain.arcadeDrive(0, 0);
+        robot.sixWheelCMD.arcadeDrive(0, 0);
     }
 }
