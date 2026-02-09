@@ -2,11 +2,16 @@ package org.firstinspires.ftc.teamcode.Commands;
 
 import static java.lang.Thread.sleep;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Utils.Library.Motor.MotorGroup;
 
 public class SixWheelCMD {
 
-    public SixWheelCMD() {}
+    Drivetrain drivetrain;
+    public SixWheelCMD(Drivetrain drivetrain) {
+        this.drivetrain = drivetrain;
+    }
+
     /**
      * A basic command that runs the drivetrain for a specified amount of time and then stops.
      *
@@ -15,7 +20,7 @@ public class SixWheelCMD {
      * @param right right side of drivetrain
      * @param time how long it runs
      */
-    public void driveBasic(DcMotorEx leftSide, DcMotorEx rightSide, float left, float right, long time) throws InterruptedException {
+    public void driveBasic(MotorGroup leftSide, MotorGroup rightSide, float left, float right, long time) throws InterruptedException {
         //set all motor powers
         setMotors(leftSide, rightSide, left,right);
         sleep(time); //wait for however long
@@ -59,23 +64,11 @@ public class SixWheelCMD {
 
     // --- Arcade Drive Constructors ---
     public void arcadeDrive(float forward, float turn) {
-        sixWheelCMD.setMotors(leftSide, rightSide, forward - turn, forward + turn);
-    }
-
-    public void arcadeDrive(DcMotorEx leftSide, DcMotorEx rightSide, float forward, float turn) {
-        sixWheelCMD.setMotors(leftSide, rightSide, forward - turn, forward + turn);
-    }
-
-    public void arcadeDrive(MotorGroup leftSide, MotorGroup rightSide, float forward, float turn) {
-        sixWheelCMD.setMotors(leftSide, rightSide, forward - turn, forward + turn);
-    }
-
-    public void tankDrive(DcMotorEx leftSide, DcMotorEx rightSide,float left, float right) {
-        sixWheelCMD.setMotors(leftSide, rightSide, left, right);
+        setMotors(drivetrain.leftSide, drivetrain.rightSide, forward - turn, forward + turn);
     }
 
     public void tankDrive(MotorGroup leftSide, MotorGroup rightSide,float left, float right) {
-        sixWheelCMD.setMotors(leftSide, rightSide, left, right);
+        setMotors(leftSide, rightSide, left, right);
     }
 
 }
