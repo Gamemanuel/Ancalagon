@@ -46,13 +46,13 @@ public abstract class Shoot3CMDWrightly extends LinearOpMode {
 
         // Drive to Position
         while (robot.ll.getDistanceInches() > TARGET_DISTANCE_INCHES && opModeIsActive()) {
-            robot.drivetrain.arcadeDrive(DRIVE_POWER, 0);
+            robot.sixWheelCMD.arcadeDrive(DRIVE_POWER, 0);
             runSubsystems(); // Updates PID and Vision
             telemetry.addData("Phase", "1. Driving");
             telemetry.addData("Distance", robot.ll.getDistanceInches());
             telemetry.update();
         }
-        robot.drivetrain.arcadeDrive(0, 0);
+        robot.sixWheelCMD.arcadeDrive(0, 0);
 
         // Wait for speed.
 
@@ -121,7 +121,7 @@ public abstract class Shoot3CMDWrightly extends LinearOpMode {
         robot.intake.floop.setPosition(FLIPPER_STOW_POS);
         robot.shooter.setTargetVelocity(0);
         robot.turretSubsystem.setPower(0);
-        robot.drivetrain.arcadeDrive(0,0);
+        robot.sixWheelCMD.arcadeDrive(0,0);
     }
 
     /**
