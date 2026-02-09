@@ -1,15 +1,14 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.hardware.lynx.LynxModule; // Import for the Hubs
+import java.util.List;
+import com.qualcomm.hardware.lynx.LynxModule;
 import org.firstinspires.ftc.teamcode.Subsystems.*;
-import org.firstinspires.ftc.teamcode.Commands.Shooter.ShooterAutoLLCMD;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Commands.Turret.TurretAutoLLCMD;
-
-import java.util.List; // Required for the list of hubs
+import org.firstinspires.ftc.teamcode.Commands.Shooter.ShooterAutoLLCMD;
 
 public class Robot {
-    // Hardware Hubs (for Bulk Reads)
+    // Hardware Hubs
     public List<LynxModule> allHubs;
 
     // Subsystems
