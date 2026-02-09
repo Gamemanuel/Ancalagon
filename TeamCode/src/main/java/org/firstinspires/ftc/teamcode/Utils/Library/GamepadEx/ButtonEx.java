@@ -51,4 +51,8 @@ public class ButtonEx {
         lastInput = currentInput;
         return check;
     }
+
+    public void periodic() {
+        lastInput = currentInput;
+    }
 }
