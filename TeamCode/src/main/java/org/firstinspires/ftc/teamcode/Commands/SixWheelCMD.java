@@ -22,6 +22,26 @@ public class SixWheelCMD {
         //stop
         setMotors(leftSide, rightSide,0,0);
     }
+
+    /**
+     * A basic command that sets the motors to a specified power. Beware that it won't stop until
+     * said to.
+     *
+     * @Creator Will (Finch)
+     * @param backLeftSide backLeft motor of the drivetrain
+     * @param backRightSide backRight motor of the drivetrain
+     * @param frontLeftSide frontLeft motor of the drivetrain
+     * @param frontRightSide frontRight motor of the drivetrain
+     * @param leftPower left side of drivetrain
+     * @param rightPower right side of drivetrain
+     */
+    public void setMotors(DcMotorEx frontLeftSide, DcMotorEx backLeftSide, DcMotorEx frontRightSide, DcMotorEx backRightSide, float leftPower, float rightPower) {
+        frontRightSide.setPower((double) rightPower);
+        backRightSide.setPower((double) rightPower);
+        frontLeftSide.setPower((double) leftPower);
+        backLeftSide.setPower((double) leftPower);
+    }
+
     /**
      * A basic command that sets the motors to a specified power. Beware that it won't stop until
      * said to.
@@ -32,11 +52,6 @@ public class SixWheelCMD {
      * @param leftPower left side of drivetrain
      * @param rightPower right side of drivetrain
      */
-    public void setMotors(DcMotorEx leftSide, DcMotorEx rightSide, float leftPower, float rightPower) {
-        leftSide.setPower((double) leftPower);
-        rightSide.setPower((double) rightPower);
-    }
-
     public void setMotors(MotorGroup leftSide, MotorGroup rightSide, float leftPower, float rightPower) {
         leftSide.setPower((double) leftPower);
         rightSide.setPower((double) rightPower);
