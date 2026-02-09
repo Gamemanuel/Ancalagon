@@ -64,7 +64,7 @@ public class LimelightTurnTuner extends OpMode {
 
             if (isCentered || isTimedOut) {
                 // STOP
-                robot.drivetrain.arcadeDrive(0, 0);
+                robot.sixWheelCMD.arcadeDrive(0, 0);
                 isTurning = false;
                 telemetry.addData("Turn Result", isCentered ? "SUCCESS" : "TIMEOUT");
             } else {
@@ -78,11 +78,11 @@ public class LimelightTurnTuner extends OpMode {
                 }
 
                 // 4. Execute Turn
-                robot.drivetrain.arcadeDrive(0f, (float) turnPower);
+                robot.sixWheelCMD.arcadeDrive(0f, (float) turnPower);
             }
         } else {
             // Manual control when not turning
-            robot.drivetrain.arcadeDrive(gamepad1.left_stick_y, gamepad1.right_stick_x);
+            robot.sixWheelCMD.arcadeDrive(gamepad1.left_stick_y, gamepad1.right_stick_x);
         }
 
         // -------------------------------------------------------------
