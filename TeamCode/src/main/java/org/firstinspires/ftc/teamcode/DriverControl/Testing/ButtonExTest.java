@@ -4,12 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.Utils.Library.GamepadEx.ButtonEx;
 import org.firstinspires.ftc.teamcode.Utils.Library.GamepadEx.GamepadEx;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ButtonExTest extends OpMode {
     GamepadEx gamepadEx;
     ButtonEx A;
+    boolean exampleToggle = false;
 
     public void init() {
         gamepadEx = new GamepadEx();
@@ -17,11 +15,18 @@ public class ButtonExTest extends OpMode {
     }
 
     public void loop() {
+
+        if (A.wasJustPressed()) {
+            exampleToggle = !exampleToggle;
+        }
+
         telemetry.addData("Pressed", A.pressed());
         telemetry.addData("Released", A.released());
         telemetry.addData("Was just pressed", A.wasJustPressed());
         telemetry.addData("Was just released", A.wasJustReleased());
         telemetry.addData("State just changed", A.stateJustChanged());
+
+        telemetry.addData("Example toggle", exampleToggle);
 
         telemetry.update();
 
