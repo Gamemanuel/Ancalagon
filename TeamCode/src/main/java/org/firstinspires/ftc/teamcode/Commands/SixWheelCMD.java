@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Commands;
 
 import static java.lang.Thread.sleep;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import org.firstinspires.ftc.teamcode.Utils.Library.Motor.MotorGroup;
 
 public class SixWheelCMD {
 
@@ -26,10 +27,17 @@ public class SixWheelCMD {
      * said to.
      *
      * @Creator Will (Finch)
+     * @param leftSide motors or motor group left side of drivetrain
+     * @param rightSide motors or motor group of the right side of drivetrain
      * @param leftPower left side of drivetrain
      * @param rightPower right side of drivetrain
      */
     public void setMotors(DcMotorEx leftSide, DcMotorEx rightSide, float leftPower, float rightPower) {
+        leftSide.setPower((double) leftPower);
+        rightSide.setPower((double) rightPower);
+    }
+
+    public void setMotors(MotorGroup leftSide, MotorGroup rightSide, float leftPower, float rightPower) {
         leftSide.setPower((double) leftPower);
         rightSide.setPower((double) rightPower);
     }

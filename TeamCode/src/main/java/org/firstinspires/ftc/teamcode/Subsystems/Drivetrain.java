@@ -4,12 +4,15 @@ import static java.lang.Thread.sleep;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import org.firstinspires.ftc.teamcode.Commands.SixWheelCMD;
 import org.firstinspires.ftc.teamcode.Utils.Library.Motor.MotorGroup;
 
 public class Drivetrain {
     public DcMotorEx frontLeft, backLeft, frontRight, backRight;
     public MotorGroup leftSide, rightSide;
     public Imu imu;
+
+    SixWheelCMD sixWheelCMD;
 
     // CPR (counts per motor revolution) calculations
     static final double COUNTS_PER_MOTOR_REV = 28.0;
@@ -41,14 +44,30 @@ public class Drivetrain {
                 DcMotorSimple.Direction.FORWARD,
                 DcMotorSimple.Direction.FORWARD
         );
+
+        sixWheelCMD = new SixWheelCMD();
     }
 
+    // --- Arcade Drive Constructors ---
     public void arcadeDrive(float forward, float turn) {
-        setMotors(forward - turn, forward + turn);
+        sixWheelCMD.setMotors(leftSide, rightSide, forward - turn, forward + turn);
     }
 
-    public void tankDrive(float left, float right) {
-        setMotors(left, right);
+    public void arcadeDrive(DcMotorEx leftSide, DcMotorEx rightSide, float forward, float turn) {
+        sixWheelCMD.setMotors(leftSide, rightSide, forward - turn, forward + turn);
+    }
+
+    public void arcadeDrive(MotorGroup leftSide, MotorGroup rightSide, float forward, float turn) {
+        sixWheelCMD.setMotors(leftSide, rightSide, forward - turn, forward + turn);
+    }
+
+    // --- Tank Drive Constructors ---
+    public void tankDrive(DcMotorEx leftSide, DcMotorEx rightSide,float left, float right) {
+        sixWheelCMD.setMotors(leftSide, rightSide, left, right);
+    }
+
+    public void tankDrive(MotorGroup leftSide, MotorGroup rightSide,float left, float right) {
+        sixWheelCMD.setMotors(leftSide, rightSide, left, right);
     }
 
     public void mecanumDrive(double x, double y, double turn) {
@@ -69,36 +88,6 @@ public class Drivetrain {
         backRight.setPower((driveRotation + strafeRotation - turn) / denominator);
         // Don't use motor groups when dealing with mecanum. It literally defeats the purpose of
         // mecanum (strafing)
-    }
-
-
-    /**
-     * A basic command that runs the drivetrain for a specified amount of time and then stops.
-     *
-     * @param left  left side of drivetrain
-     * @param right right side of drivetrain
-     * @param time  how long it runs
-     * @Creator Will (Finch)
-     */
-    public void driveBasic(float left, float right, long time) throws InterruptedException {
-        //set all motor powers
-        setMotors(left, right);
-        sleep(time); //wait for however long
-        //stop
-        setMotors(0, 0);
-    }
-
-    /**
-     * A basic command that sets the motors to a specified power. Beware that it won't stop until
-     * said to.
-     *
-     * @param left  left side of drivetrain
-     * @param right right side of drivetrain
-     * @Creator Will (Finch) updated by Gavin (Rappleye)
-     */
-    public void setMotors(float left, float right) {
-        leftSide.setPower((double) left);
-        rightSide.setPower((double) right);
     }
 
 }
