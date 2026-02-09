@@ -56,4 +56,26 @@ public class SixWheelCMD {
         leftSide.setPower((double) leftPower);
         rightSide.setPower((double) rightPower);
     }
+
+    // --- Arcade Drive Constructors ---
+    public void arcadeDrive(float forward, float turn) {
+        sixWheelCMD.setMotors(leftSide, rightSide, forward - turn, forward + turn);
+    }
+
+    public void arcadeDrive(DcMotorEx leftSide, DcMotorEx rightSide, float forward, float turn) {
+        sixWheelCMD.setMotors(leftSide, rightSide, forward - turn, forward + turn);
+    }
+
+    public void arcadeDrive(MotorGroup leftSide, MotorGroup rightSide, float forward, float turn) {
+        sixWheelCMD.setMotors(leftSide, rightSide, forward - turn, forward + turn);
+    }
+
+    public void tankDrive(DcMotorEx leftSide, DcMotorEx rightSide,float left, float right) {
+        sixWheelCMD.setMotors(leftSide, rightSide, left, right);
+    }
+
+    public void tankDrive(MotorGroup leftSide, MotorGroup rightSide,float left, float right) {
+        sixWheelCMD.setMotors(leftSide, rightSide, left, right);
+    }
+
 }
