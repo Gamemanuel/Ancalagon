@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.Utils;
 
 import java.util.List;
 import com.qualcomm.hardware.lynx.LynxModule;
-import org.firstinspires.ftc.teamcode.Commands.SixWheelCMD;
 import org.firstinspires.ftc.teamcode.Subsystems.*;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.teamcode.Commands.SixWheelCMD;
 import org.firstinspires.ftc.teamcode.Commands.Turret.TurretAutoLLCMD;
 import org.firstinspires.ftc.teamcode.Commands.Shooter.ShooterAutoLLCMD;
 
@@ -53,13 +53,10 @@ public class Robot {
     }
 
     /**
-     * This method is the "heartbeat" of your robot.
-     * It MUST be called at the very start of every loop().
+     * This method MUST be called at the very start of every loop().
      */
     public void runPeriodic() {
-        // A. CLEAR BULK CACHE
-        // This tells the Hubs: "Go get new data from the hardware right now."
-        // All subsequent reads in this loop will use this fresh data instantly.
+        // gets new data from the hubs
         for (LynxModule hub : allHubs) {
             hub.clearBulkCache();
         }
