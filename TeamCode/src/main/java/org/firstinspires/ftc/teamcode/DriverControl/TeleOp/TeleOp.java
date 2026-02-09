@@ -30,7 +30,7 @@ public abstract class TeleOp extends OpMode {
         robot.ll.periodic();
 
         // run the drivetrain drive code.
-        robot.drivetrain.arcadeDrive(gamepad1.left_stick_y, gamepad1.right_stick_x);
+        robot.sixWheelCMD.arcadeDrive(gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         // --- Intake ---
         robot.intake.front.setPower(gamepad2.left_trigger - gamepad2.right_trigger);

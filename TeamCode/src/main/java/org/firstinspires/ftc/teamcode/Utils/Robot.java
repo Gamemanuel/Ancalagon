@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Utils;
 
 import java.util.List;
 import com.qualcomm.hardware.lynx.LynxModule;
+import org.firstinspires.ftc.teamcode.Commands.SixWheelCMD;
 import org.firstinspires.ftc.teamcode.Subsystems.*;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Commands.Turret.TurretAutoLLCMD;
@@ -21,6 +22,7 @@ public class Robot {
     // Commands / Logic
     public TurretAutoLLCMD turretAuto;
     public ShooterAutoLLCMD shooterAutoCmd;
+    public SixWheelCMD sixWheelCMD;
 
     public Alliance alliance;
 
@@ -47,6 +49,7 @@ public class Robot {
         // 3. INITIALIZE COMMANDS
         turretAuto = new TurretAutoLLCMD(turretSubsystem, ll);
         shooterAutoCmd = new ShooterAutoLLCMD(shooter, ll);
+        sixWheelCMD = new SixWheelCMD(drivetrain);
     }
 
     /**

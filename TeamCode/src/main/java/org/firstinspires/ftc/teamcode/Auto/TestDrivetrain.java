@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous
 public class TestDrivetrain extends LinearOpMode {
-
     Drivetrain drivetrain;
     SixWheelCMD sixWheelCMD;
 
