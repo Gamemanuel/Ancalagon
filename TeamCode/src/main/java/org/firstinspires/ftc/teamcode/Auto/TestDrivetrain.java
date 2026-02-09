@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import org.firstinspires.ftc.teamcode.Commands.SixWheelCMD;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -8,10 +9,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 public class TestDrivetrain extends LinearOpMode {
 
     Drivetrain drivetrain;
+    SixWheelCMD sixWheelCMD;
 
     @Override
     public void runOpMode() throws InterruptedException{
         drivetrain = new Drivetrain(hardwareMap);
+        sixWheelCMD = new SixWheelCMD(drivetrain);
+
         waitForStart();
 
         while (!gamepad1.a && !isStopRequested()) {
@@ -23,9 +27,9 @@ public class TestDrivetrain extends LinearOpMode {
             // NOTE: they all should spin at the same power as well. If they do not check the
             // voltage on the driver station and make sure the motors are configured correctly
 
-            drivetrain.arcadeDrive(1,1);
+            sixWheelCMD.arcadeDrive(1,1);
         }
         // if you press the controller button a then you stop all motors
-        drivetrain.arcadeDrive(0,0);
+        sixWheelCMD.arcadeDrive(0,0);
     }
 }
