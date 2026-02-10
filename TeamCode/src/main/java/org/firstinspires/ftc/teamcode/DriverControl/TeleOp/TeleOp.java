@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.DriverControl.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import org.firstinspires.ftc.teamcode.Utils.Library.GamepadEx.ButtonEx;
+import org.firstinspires.ftc.teamcode.Utils.Library.GamepadEx.GamepadEx;
 import org.firstinspires.ftc.teamcode.Utils.Robot;
 import org.firstinspires.ftc.teamcode.Utils.Alliance;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -10,8 +12,9 @@ public abstract class TeleOp extends OpMode {
 
     Robot robot;
     private final Alliance alliance;
-    private boolean shooterManualOverride = false; // Manual override flag for the shooter
-    private boolean lastYButtonState = false; // To detect button press (rising edge)
+    GamepadEx gamepad2Ex;
+    ButtonEx shooterToggleButton;
+    boolean shooterManualOverride = false;
 
     public TeleOp(Alliance alliance) {
         this.alliance = alliance;
@@ -20,13 +23,14 @@ public abstract class TeleOp extends OpMode {
     public void init() {
         // link telemetry
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
+        gamepad2Ex = new GamepadEx();
+        gamepad2Ex.buttons.add(shooterToggleButton = new ButtonEx(gamepad2.y));
         // call the subsystems
         robot = new Robot(hardwareMap, alliance);
     }
 
     public void loop() {
-        // CLEAR THE BULK CACHE — without this, all encoder reads are stale!
+        // CLEAR THE BULK CACHE — without this, all encoder reads are stale
         for (com.qualcomm.hardware.lynx.LynxModule hub : robot.allHubs) {
             hub.clearBulkCache();
         }
@@ -54,10 +58,9 @@ public abstract class TeleOp extends OpMode {
 
         // --- Shooter Logic ---
         // Toggle Manual override with Y button on gamepad2
-        if (gamepad2.y && !lastYButtonState) {
+        if (shooterToggleButton.wasJustPressed()) {
             shooterManualOverride = !shooterManualOverride;
         }
-        lastYButtonState = gamepad2.y;
 
         if (shooterManualOverride) {
             // --- Manual mode ---
@@ -82,5 +85,7 @@ public abstract class TeleOp extends OpMode {
         telemetry.addData("Motor Power", robot.shooter.shooter.getPower());
 
         telemetry.update();
+
+        gamepad2Ex.update();
     }
 }
