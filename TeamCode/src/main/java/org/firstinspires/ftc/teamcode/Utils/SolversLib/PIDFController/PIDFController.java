@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Utils.SolversLib.PIDFController;
 
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import org.firstinspires.ftc.teamcode.Utils.SolversLib.MathUtils.MathUtils;
 import org.firstinspires.ftc.teamcode.Utils.SolversLib.Controller.Controller;
 
 /**
@@ -17,9 +18,71 @@ import org.firstinspires.ftc.teamcode.Utils.SolversLib.Controller.Controller;
  */
 public class PIDFController extends Controller {
     protected double kP, kI, kD, kF;
-    protected double minIntegral, maxIntegral;
 
     protected double totalError;
+
+    /**
+     * Extra functionality and behavior of the controller to deal with integration build-up.
+     */
+    public enum IntegrationBehavior {
+        /**
+         * No special behavior apart from restricting to integration bounds and decaying as set in the constructor.
+         */
+        NONE,
+        /**
+         * Clears total integration when the controller reaches the setpoint within tolerance.
+         */
+        CLEAR_AT_SP
+    }
+
+    /**
+     * Internal configuration class to deal with integration build-up.
+     * Has configurations for setting total integration bounds, decaying (if integration term becomes opposite of error), and {@link IntegrationBehavior}.
+     */
+    public static class IntegrationControl {
+        IntegrationBehavior integrationBehavior;
+        double decayFactor;
+        double minIntegral;
+        double maxIntegral;
+
+        public IntegrationControl(IntegrationBehavior integrationBehavior, double decayFactor, double minIntegral, double maxIntegral) {
+            this.integrationBehavior = integrationBehavior;
+            this.decayFactor = decayFactor;
+            this.minIntegral = minIntegral;
+            this.maxIntegral = maxIntegral;
+        }
+
+        IntegrationControl() {
+            this(IntegrationBehavior.NONE, 1, -1.0, 1.0);
+        }
+
+        public void setIntegrationBehavior(IntegrationBehavior integrationBehavior) {
+            this.integrationBehavior = integrationBehavior;
+        }
+        public IntegrationBehavior getIntegrationBehavior() {
+            return integrationBehavior;
+        }
+
+        public void setDecayFactor(double decayFactor) {
+            this.decayFactor = decayFactor;
+        }
+        public double getDecayFactor() {
+            return decayFactor;
+        }
+
+        public void setIntegrationBounds(double min, double max) {
+            this.minIntegral = min;
+            this.maxIntegral = max;
+        }
+        public double getMinIntegral() {
+            return minIntegral;
+        }
+        public double getMaxIntegral() {
+            return maxIntegral;
+        }
+    }
+
+    public IntegrationControl integrationControl;
 
     /**
      * The base constructor for the PIDF controller
@@ -41,7 +104,7 @@ public class PIDFController extends Controller {
      * Our errorVal represents the return of e(t) and prevErrorVal is the previous error.
      *
      * @param sp The setpoint of the pid control loop.
-     * @param pv The measured value of he pid control loop. We want sp = pv, or to the degree
+     * @param pv The measured value of the pid control loop. We want sp = pv, or to the degree
      *           such that sp - pv, or e(t) < tolerance.
      */
     public PIDFController(double kp, double ki, double kd, double kf, double sp, double pv) {
@@ -53,10 +116,18 @@ public class PIDFController extends Controller {
         setPoint = sp;
         measuredValue = pv;
 
-        minIntegral = -1.0;
-        maxIntegral = 1.0;
+        integrationControl = new IntegrationControl();
 
         errorVal_p = setPoint - measuredValue;
+    }
+
+    /**
+     * Set the controller to deal with the common issue of integration build-up. For the modes, see #IntegrationControl
+     * @return this object for chaining purposes
+     */
+    public PIDFController setIntegrationControl(IntegrationControl integrationControl) {
+        this.integrationControl = integrationControl;
+        return this;
     }
 
     @Override
@@ -104,7 +175,13 @@ public class PIDFController extends Controller {
         e(t) = sp - pv, then the total error, E(t), equals sp*t - pv*t.
          */
         totalError += period * (setPoint - measuredValue);
-        totalError = totalError < minIntegral ? minIntegral : Math.min(maxIntegral, totalError);
+        totalError = MathUtils.clamp(totalError, integrationControl.getMinIntegral(), integrationControl.getMaxIntegral());
+        if ((Math.signum(totalError) != Math.signum(errorVal_p))) {
+            totalError *= integrationControl.getDecayFactor();
+        }
+        if (atSetPoint() && integrationControl.getIntegrationBehavior().equals(IntegrationBehavior.CLEAR_AT_SP)) {
+            clearTotalError();
+        }
 
         // returns u(t)
         return kP * errorVal_p + kI * totalError + kD * errorVal_v + kF * setPoint;
@@ -121,9 +198,12 @@ public class PIDFController extends Controller {
         setPIDF(coefficients.p, coefficients.i, coefficients.d, coefficients.f);
     }
 
+    /**
+     * Please use the internal {@link #integrationControl} object and its setIntegrationBounds method.
+     */
+    @Deprecated
     public void setIntegrationBounds(double integralMin, double integralMax) {
-        minIntegral = integralMin;
-        maxIntegral = integralMax;
+        integrationControl.setIntegrationBounds(integralMin, integralMax);
     }
 
     public void clearTotalError() {
@@ -161,4 +241,5 @@ public class PIDFController extends Controller {
     public double getF() {
         return kF;
     }
+
 }

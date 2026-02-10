@@ -50,6 +50,8 @@ public class ShooterTuning extends LinearOpMode {
             telemetry.addData("Current kV", ShooterSubsystem.kV);
             telemetry.addData("Current kP", ShooterSubsystem.SCoeffs.p);
 
+
+
             telemetry.update();
         }
     }

@@ -23,6 +23,7 @@ public abstract class TeleOp extends OpMode {
     public void init() {
         // link telemetry
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         gamepad2Ex = new GamepadEx();
         gamepad2Ex.buttons.add(shooterToggleButton = new ButtonEx(gamepad2.y));
         // call the subsystems
@@ -30,11 +31,6 @@ public abstract class TeleOp extends OpMode {
     }
 
     public void loop() {
-        // CLEAR THE BULK CACHE — without this, all encoder reads are stale
-        for (com.qualcomm.hardware.lynx.LynxModule hub : robot.allHubs) {
-            hub.clearBulkCache();
-        }
-
         // run the ll loop every loop
         robot.ll.periodic();
 
@@ -78,11 +74,6 @@ public abstract class TeleOp extends OpMode {
         telemetry.addData("Shooter Mode", shooterManualOverride ? "MANUAL" : "AUTO");
         telemetry.addData("Shooter Target", robot.shooter.getTargetVelocity());
         telemetry.addData("Shooter Actual", robot.shooter.shooter.getVelocity());
-
-        // Add this in the loop() method alongside existing telemetry
-        telemetry.addData("Encoder Ticks", robot.shooter.shooter.getCurrentPosition());
-        telemetry.addData("Velocity", robot.shooter.shooter.getVelocity());
-        telemetry.addData("Motor Power", robot.shooter.shooter.getPower());
 
         telemetry.update();
 

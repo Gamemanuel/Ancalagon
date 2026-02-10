@@ -1,7 +1,11 @@
 package org.firstinspires.ftc.teamcode.Utils.SolversLib.Controller;
 
+import org.firstinspires.ftc.teamcode.Utils.SolversLib.MathUtils.MathUtils;
+
 public abstract class Controller {
     private double minOutput = 0;
+    private double maxOutput = Double.POSITIVE_INFINITY;
+    private double openF = 0;
     protected double setPoint;
     protected double measuredValue;
 
@@ -32,7 +36,7 @@ public abstract class Controller {
      *
      * NOTE: Is not used publicly and is instead wrapped in
      * {@link #calculate(double)} before being visible to user to allow for
-     * other features such as {@link #setMinimumOutput(double)}
+     * other features such as {@link #setMinOutput(double)}
      *
      * @param pv The given measured value.
      * @return the value produced by u(t).
@@ -41,17 +45,18 @@ public abstract class Controller {
 
     /**
      * Calculates the control value, u(t). Also follows the minimum output
-     * (see: {@link #setMinimumOutput(double)}) if set.
+     * (see: {@link #setMinOutput(double)}) if set.
      *
      * @param pv The given measured value.
      * @return the value produced by u(t).
      */
     public double calculate(double pv) {
-        double rawOutput = calculateOutput(pv);
+        double output = calculateOutput(pv);
+        output += Math.signum(errorVal_p) * openF;
         if (atSetPoint()) {
-            return rawOutput;
+            return output;
         } else {
-            return Math.max(Math.abs(rawOutput), minOutput) * Math.signum(rawOutput);
+            return MathUtils.clamp(Math.abs(output), minOutput, maxOutput) * Math.signum(output);
         }
     }
 
@@ -86,12 +91,7 @@ public abstract class Controller {
     public void setSetPoint(double sp) {
         setPoint = sp;
         errorVal_p = setPoint - measuredValue;
-//        errorVal_v = (errorVal_p - prevErrorVal) / period;
-        if (Math.abs(period) > 1E-6) {
-            errorVal_v = (errorVal_p - prevErrorVal) / period;
-        } else {
-            errorVal_v = 0;
-        }
+        errorVal_v = (errorVal_p - prevErrorVal) / period;
     }
 
     /**
@@ -165,8 +165,48 @@ public abstract class Controller {
      * @param minOutput the minimum (magnitude of the / absolute value of the) output for the controller
      * @return this object for chaining purposes
      */
-    public Controller setMinimumOutput(double minOutput) {
+    public Controller setMinOutput(double minOutput) {
         this.minOutput = Math.abs(minOutput);
+        return this;
+    }
+
+    /**
+     * Gets the minimum output (0 by default)
+     *
+     * @return the minimum output
+     */
+    public double getMinOutput() {
+        return minOutput;
+    }
+
+    /**
+     * An option to enforce a max (magnitude of the / absolute value of the) output from
+     * subsequent calculations from the controller if the controller is not {@link #atSetPoint()}
+     * @param maxOutput the max (magnitude of the / absolute value of the) output for the controller
+     * @return this object for chaining purposes
+     */
+    public Controller setMaxOutput(double maxOutput) {
+        this.maxOutput = maxOutput;
+        return this;
+    }
+
+    /**
+     * Gets the maximum output (Positive Infinity by default)
+     *
+     * @return the maximum output
+     */
+    public double getMaxOutput() {
+        return maxOutput;
+    }
+
+    /**
+     * Adds a basic open-loop feedforward that is added to any calls to {@link #calculate(double)} and its variants.
+     * Term will flip to match sign error when being added.
+     * @param f the feedforward term
+     * @return this object for chaining purposes
+     */
+    public Controller setOpenF(double f) {
+        this.openF = f;
         return this;
     }
 }
