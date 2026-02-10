@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Utils.Library.GamepadEx;
 public class ButtonEx {
     private final boolean currentInput;
-    private boolean lastInput;
+    private boolean lastInput = false;
     /**
      * Creates a button that has extra functionality.
      * @author Will
@@ -50,5 +50,9 @@ public class ButtonEx {
         boolean check = (lastInput != currentInput);
         lastInput = currentInput;
         return check;
+    }
+
+    public void periodic() {
+        lastInput = currentInput;
     }
 }
