@@ -86,7 +86,12 @@ public abstract class Controller {
     public void setSetPoint(double sp) {
         setPoint = sp;
         errorVal_p = setPoint - measuredValue;
-        errorVal_v = (errorVal_p - prevErrorVal) / period;
+//        errorVal_v = (errorVal_p - prevErrorVal) / period;
+        if (Math.abs(period) > 1E-6) {
+            errorVal_v = (errorVal_p - prevErrorVal) / period;
+        } else {
+            errorVal_v = 0;
+        }
     }
 
     /**

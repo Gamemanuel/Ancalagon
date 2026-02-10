@@ -35,9 +35,9 @@ public class ShooterTuning extends LinearOpMode {
 
             // 1. Set the target velocity from the Dashboard variable
             robot.shooter.setTargetVelocity(TESTING_TARGET_RPM);
-            robot.intake.front.setPower(-1);
+//            robot.intake.front.setPower(-1);
 
-            robot.turretAuto.faceAprilTag(1.5, TEST_ALLIANCE);
+            robot.turretAuto.faceAprilTag(.5, TEST_ALLIANCE);
 
             // 2. Run the Periodic loop (Calculates PID + Feedforward)
             robot.shooter.periodic();

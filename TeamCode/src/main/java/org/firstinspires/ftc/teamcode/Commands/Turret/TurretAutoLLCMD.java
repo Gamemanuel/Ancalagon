@@ -26,10 +26,10 @@ public class TurretAutoLLCMD {
         // Switch pipeline based on alliance
         if (alliance == Alliance.RED) {
             ll.limelight.pipelineSwitch(3);
-            offset = 2.5;
+//            offset = 2.5;
         } else {
             ll.limelight.pipelineSwitch(2);
-            offset = 1;
+//            offset = 1;
         }
 
         LLResult result = ll.limelight.getLatestResult();
@@ -55,7 +55,7 @@ public class TurretAutoLLCMD {
 
                 // Send to turret (Limit to max 1.0)
                 // Note: I added a negative sign here assuming standard orientation, remove if it turns wrong way
-                turret.setPower(-power*.25);
+                turret.setPower(-power);
             } else {
                 // Inside tolerance: Stop completely
                 turret.setPower(0);
