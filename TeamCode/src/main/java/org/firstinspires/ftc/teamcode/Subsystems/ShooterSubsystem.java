@@ -18,7 +18,7 @@ public class ShooterSubsystem {
     // SIGNS FIXED: kP and kD must be POSITIVE.
     // setPoint = +950, velocity = 0 → error = +950
     public static PIDFCoefficients SCoeffs = new PIDFCoefficients(-0.00055, 0, -0.00004, 0);
-    public static double kV = 0.000633;
+    public static double kV = 0.00169;
 
     private double TargetVelocity = 0;
 
