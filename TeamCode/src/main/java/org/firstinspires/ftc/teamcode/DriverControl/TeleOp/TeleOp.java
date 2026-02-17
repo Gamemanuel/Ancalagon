@@ -38,8 +38,7 @@ public abstract class TeleOp extends OpMode {
         robot.sixWheelCMD.arcadeDrive(gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         // --- Intake ---
-        robot.intake.front.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
-        robot.intake.floop.setPosition(-gamepad2.left_stick_y * 0.75);
+        robot.intake.intake.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
 
         // --- Turret Logic ---
         // Manual override triggers
