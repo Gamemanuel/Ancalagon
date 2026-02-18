@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Utils.Library.Motor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import org.firstinspires.ftc.teamcode.Utils.Library.Motor.PositionType;
 
 public class MotorGroup {
@@ -87,5 +88,54 @@ public class MotorGroup {
         } else {
             return 0;
         }
+    }
+
+    /**
+     * Gets the velocity of the MotorGroup.
+     * Returns the average velocity of both motors for smoother control.
+     * @return Average velocity in ticks per second
+     */
+    public double getVelocity() {
+        if (positionType == PositionType.AVERAGE) {
+            return (Leader.getVelocity() + Follower.getVelocity()) * 0.5;
+        } else if (positionType == PositionType.LEADER) {
+            return Leader.getVelocity();
+        } else if (positionType == PositionType.FOLLOWER) {
+            return Follower.getVelocity();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Gets the velocity of the leader motor.
+     * @return Leader motor velocity in ticks per second
+     */
+    public double getLeaderVelocity() {
+        return Leader.getVelocity();
+    }
+
+    /**
+     * Gets the velocity of the follower motor.
+     * @return Follower motor velocity in ticks per second
+     */
+    public double getFollowerVelocity() {
+        return Follower.getVelocity();
+    }
+
+    /**
+     * Provides access to the leader motor for advanced control.
+     * @return Leader motor
+     */
+    public DcMotorEx getLeader() {
+        return Leader;
+    }
+
+    /**
+     * Provides access to the follower motor for advanced control.
+     * @return Follower motor
+     */
+    public DcMotorEx getFollower() {
+        return Follower;
     }
 }

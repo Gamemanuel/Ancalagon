@@ -66,7 +66,7 @@ public abstract class Shoot3CMD extends LinearOpMode {
             runSubsystems(); // Updates PID and Vision
 
             double target = robot.shooter.getTargetVelocity();
-            double actual = robot.shooter.shooter.getVelocity();
+            double actual = robot.shooter.getCurrentVelocity();
 
             if (Math.abs(target - actual) <= SHOOTER_TOLERANCE) {
                 break;
@@ -106,10 +106,10 @@ public abstract class Shoot3CMD extends LinearOpMode {
                 safeWait(SHOT_DELAY_MS);
 
                 // 2. (Optional but Recommended) Wait until velocity recovers exactly
-                while (Math.abs(robot.shooter.getTargetVelocity() - robot.shooter.shooter.getVelocity()) > SHOOTER_TOLERANCE && opModeIsActive()) {
+                while (Math.abs(robot.shooter.getTargetVelocity() - robot.shooter.getCurrentVelocity()) > SHOOTER_TOLERANCE && opModeIsActive()) {
                     runSubsystems();
                     telemetry.addData("Phase", "Recovering Speed...");
-                    telemetry.addData("Err", robot.shooter.getTargetVelocity() - robot.shooter.shooter.getVelocity());
+                    telemetry.addData("Err", robot.shooter.getTargetVelocity() - robot.shooter.getCurrentVelocity());
                     telemetry.update();
                 }
 

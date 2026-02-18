@@ -65,7 +65,7 @@ public abstract class Shoot3CMDWrightly extends LinearOpMode {
         while (opModeIsActive() && System.currentTimeMillis() < startTime + timeout) {
             runSubsystems();
             double target = robot.shooter.getTargetVelocity();
-            double actual = robot.shooter.shooter.getVelocity();
+            double actual = robot.shooter.getCurrentVelocity();
 
             if (Math.abs(target - actual) <= SHOOTER_TOLERANCE) {
                 break;
@@ -102,10 +102,10 @@ public abstract class Shoot3CMDWrightly extends LinearOpMode {
                 safeWait(SHOT_DELAY_MS);
 
                 // Wait until velocity recovers (it will recover to FIXED_SHOOTER_VELOCITY)
-                while (Math.abs(robot.shooter.getTargetVelocity() - robot.shooter.shooter.getVelocity()) > SHOOTER_TOLERANCE && opModeIsActive()) {
+                while (Math.abs(robot.shooter.getTargetVelocity() - robot.shooter.getCurrentVelocity()) > SHOOTER_TOLERANCE && opModeIsActive()) {
                     runSubsystems();
                     telemetry.addData("Phase", "Recovering Speed...");
-                    telemetry.addData("Err", robot.shooter.getTargetVelocity() - robot.shooter.shooter.getVelocity());
+                    telemetry.addData("Err", robot.shooter.getTargetVelocity() - robot.shooter.getCurrentVelocity());
                     telemetry.update();
                 }
 

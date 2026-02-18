@@ -59,7 +59,7 @@ public abstract class TeleOp extends OpMode {
 
         if (shooterManualOverride) {
             // --- Manual mode ---
-            robot.shooter.shooter.setPower(-gamepad2.right_stick_y);
+            robot.shooter.shooterMotors.setPower(-gamepad2.right_stick_y);
         } else {
             // --- Automatic Mode ---
             // Run the auto subsystem
@@ -72,7 +72,7 @@ public abstract class TeleOp extends OpMode {
         // Telemetry
         telemetry.addData("Shooter Mode", shooterManualOverride ? "MANUAL" : "AUTO");
         telemetry.addData("Shooter Target", robot.shooter.getTargetVelocity());
-        telemetry.addData("Shooter Actual", robot.shooter.shooter.getVelocity());
+        telemetry.addData("Shooter Actual", robot.shooter.getCurrentVelocity());
 
         telemetry.update();
 

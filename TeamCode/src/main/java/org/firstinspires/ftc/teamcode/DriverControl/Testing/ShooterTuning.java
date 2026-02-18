@@ -42,13 +42,18 @@ public class ShooterTuning extends LinearOpMode {
             // 2. Run the Periodic loop (Calculates PID + Feedforward)
             robot.shooter.periodic();
 
-            // 3. Telemetry for Graphing
+            // 3. Telemetry for Graphing and Tuning
             telemetry.addData("Target Velocity", TESTING_TARGET_RPM);
-            telemetry.addData("Actual Velocity", robot.shooter.shooter.getVelocity());
+            telemetry.addData("Average Velocity", robot.shooter.getCurrentVelocity());
+            telemetry.addData("Leader Velocity", robot.shooter.getLeaderVelocity());
+            telemetry.addData("Follower Velocity", robot.shooter.getFollowerVelocity());
+            telemetry.addData("Velocity Error", robot.shooter.getVelocityError());
 
-            // Show the values we are tuning
-            telemetry.addData("Current kV", ShooterSubsystem.kV);
-            telemetry.addData("Current kP", ShooterSubsystem.SCoeffs.p);
+            // Show the tuning parameters
+            telemetry.addData("kV", ShooterSubsystem.kV);
+            telemetry.addData("kP", ShooterSubsystem.kP);
+            telemetry.addData("kI", ShooterSubsystem.kI);
+            telemetry.addData("kD", ShooterSubsystem.kD);
 
 
 
