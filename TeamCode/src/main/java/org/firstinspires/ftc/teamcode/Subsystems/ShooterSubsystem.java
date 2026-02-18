@@ -25,10 +25,14 @@ public class ShooterSubsystem {
     private double targetVelocity = 0;
 
     // PIDF Coefficients - Tunable via FTC Dashboard
-    // Note: Signs may need adjustment based on motor direction
-    public static double kP = 0.00055;
+    // NOTE: The original implementation used negative coefficients because the motor velocity
+    // reads as negative when spinning in the shooting direction. This is preserved to maintain
+    // the original control behavior. If you reverse motor direction or change hardware config,
+    // you may need to flip these signs. The PID formula is: output = kP*error + kI*integral + kD*derivative
+    // where error = setpoint - measured. With negative gains, positive error produces negative correction.
+    public static double kP = -0.00055;
     public static double kI = 0.0;
-    public static double kD = 0.00004;
+    public static double kD = -0.00004;
     public static double kF = 0.0;
     
     // Feedforward gain for velocity control
@@ -99,51 +103,53 @@ public class ShooterSubsystem {
 
     /**
      * Sets the target velocity for the shooter motors.
-     * @param target Target velocity in ticks per second (positive for shooting)
+     * NOTE: Motor velocity reads as negative when spinning in shooting direction.
+     * This method negates the target to match the motor's sign convention.
+     * @param target Target velocity magnitude in ticks per second (pass as positive, e.g., 1500)
      */
     public void setTargetVelocity(double target) {
-        targetVelocity = target;
-        shooterPIDF.setSetPoint(target);
+        targetVelocity = -target;  // Negate to match motor sign convention
+        shooterPIDF.setSetPoint(-target);
     }
 
     /**
-     * Gets the current target velocity.
-     * @return Target velocity in ticks per second
+     * Gets the current target velocity magnitude.
+     * @return Target velocity magnitude (positive value)
      */
     public double getTargetVelocity() {
-        return targetVelocity;
+        return -targetVelocity;  // Return positive magnitude for user display
     }
 
     /**
-     * Gets the current average velocity of both shooter motors.
-     * @return Current velocity in ticks per second
+     * Gets the current average velocity magnitude of both shooter motors.
+     * @return Current velocity magnitude (positive value)
      */
     public double getCurrentVelocity() {
-        return shooterMotors.getVelocity();
+        return -shooterMotors.getVelocity();  // Return positive magnitude for user display
     }
 
     /**
-     * Gets the velocity of the leader motor.
-     * @return Leader motor velocity in ticks per second
+     * Gets the velocity magnitude of the leader motor.
+     * @return Leader motor velocity magnitude (positive value)
      */
     public double getLeaderVelocity() {
-        return shooterMotors.getLeaderVelocity();
+        return -shooterMotors.getLeaderVelocity();
     }
 
     /**
-     * Gets the velocity of the follower motor.
-     * @return Follower motor velocity in ticks per second
+     * Gets the velocity magnitude of the follower motor.
+     * @return Follower motor velocity magnitude (positive value)
      */
     public double getFollowerVelocity() {
-        return shooterMotors.getFollowerVelocity();
+        return -shooterMotors.getFollowerVelocity();
     }
 
     /**
-     * Gets the velocity error (setpoint - actual).
-     * @return Velocity error
+     * Gets the velocity error magnitude (target - actual).
+     * @return Velocity error magnitude (positive when below target)
      */
     public double getVelocityError() {
-        return targetVelocity - getCurrentVelocity();
+        return getTargetVelocity() - getCurrentVelocity();
     }
 
     /**
