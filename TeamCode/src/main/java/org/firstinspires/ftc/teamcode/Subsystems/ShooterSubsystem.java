@@ -3,160 +3,116 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import org.firstinspires.ftc.teamcode.Utils.Library.Motor.MotorGroup;
-import org.firstinspires.ftc.teamcode.Utils.Library.Motor.PositionType;
 import org.firstinspires.ftc.teamcode.Utils.SolversLib.PIDFController.PIDFController;
 
 @Config
 public class ShooterSubsystem {
 
-    // Hardware
-    public MotorGroup shooterMotors;
-    private DcMotorEx shooterLeader;
-    private DcMotorEx shooterFollower;
+    public DcMotorEx shooter;
+    public PIDFController shooterPIDF;
     private VoltageSensor batteryVoltageSensor;
 
-    // Control
-    public PIDFController shooterPIDF;
-    private double targetVelocity = 0;
+    // ===== TUNING PARAMETERS (Dashboard Tunable) =====
+    // Start with these conservative values and tune using the guide below
+    public static PIDFCoefficients SCoeffs = new PIDFCoefficients(-0.0008, -0.00001, -0.00006, 0);
+    public static double kV = 0.00169;  // Feedforward velocity constant
 
-    // PIDF Coefficients - Tunable via FTC Dashboard
-    // NOTE: The original implementation used negative coefficients because the motor velocity
-    // reads as negative when spinning in the shooting direction. I may need to flip these signs.
-    // The PID formula is: output = kP*error + kI*integral + kD*derivative
-    // where error = setpoint - measured. With negative gains, positive error produces negative correction.
-    public static double kP = -0.00055;
-    public static double kI = 0.0;
-    public static double kD = -0.00004;
-    public static double kF = 0.0;
+    // Velocity filtering (reduces encoder noise)
+    public static double VELOCITY_FILTER_GAIN = 0.7;  // 0.0 = no filter, 1.0 = max smoothing
 
-    // Feedforward gain for velocity control
-    public static double kV = 0.00169;
+    // Acceleration limiting (prevents overshoot)
+    public static double MAX_ACCEL_PER_LOOP = 150.0;  // ticks/sec² change limit
 
-    // Integration bounds to prevent windup
-    public static double INTEGRAL_MIN = -0.5;
-    public static double INTEGRAL_MAX = 0.5;
+    // Tolerance for "at speed" detection
+    public static double AT_SPEED_TOLERANCE = 50.0;  // ±50 ticks/sec
+
+    // Internal state
+    private double TargetVelocity = 0;
+    private double filteredVelocity = 0;
+    private double lastCommandedPower = 0;
+    private long lastUpdateTime = 0;
 
     public ShooterSubsystem(HardwareMap hMap) {
-        // Initialize both shooter motors
-        shooterLeader = hMap.get(DcMotorEx.class, "shooter");
-        shooterFollower = hMap.get(DcMotorEx.class, "shooter2");
+        shooter = hMap.get(DcMotorEx.class, "shooter");
+        shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);  // Reduces friction
 
-        // Reset encoders
-        shooterLeader.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shooterFollower.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        // Run without encoder (manual velocity control)
-        shooterLeader.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooterFollower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        // Create motor group (adjust directions as needed for your robot)
-        shooterMotors = new MotorGroup(
-                shooterLeader,
-                shooterFollower,
-                DcMotorSimple.Direction.REVERSE,
-                DcMotorSimple.Direction.FORWARD
-        );
-
-        // Use average velocity from both motors for smoother control
-        shooterMotors.setPositionType(PositionType.AVERAGE);
-
-        // Initialize voltage sensor
         batteryVoltageSensor = hMap.voltageSensor.iterator().next();
+        shooterPIDF = new PIDFController(SCoeffs);
 
-        // Initialize PIDF controller with coefficients
-        PIDFCoefficients coeffs = new PIDFCoefficients(kP, kI, kD, kF);
-        shooterPIDF = new PIDFController(coeffs);
-
-        // Set integration bounds to prevent windup
-        shooterPIDF.integrationControl.setIntegrationBounds(INTEGRAL_MIN, INTEGRAL_MAX);
+        lastUpdateTime = System.currentTimeMillis();
     }
 
     public void periodic() {
-        // 1. Update coefficients from Dashboard
-        PIDFCoefficients coeffs = new PIDFCoefficients(kP, kI, kD, kF);
-        shooterPIDF.setCoefficients(coeffs);
-        shooterPIDF.integrationControl.setIntegrationBounds(INTEGRAL_MIN, INTEGRAL_MAX);
+        // 1. Update Coefficients (allows live tuning)
+        shooterPIDF.setCoefficients(SCoeffs);
 
-        // 2. Get current state (average velocity from both motors)
-        double currentVelocity = shooterMotors.getVelocity();
+        // 2. Get Current State
+        double rawVelocity = shooter.getVelocity();
         double currentVoltage = batteryVoltageSensor.getVoltage();
 
-        // 3. Calculate PIDF output
-        double pidOutput = shooterPIDF.calculateOutput(currentVelocity);
+        // 3. Apply velocity filtering (exponential moving average)
+        filteredVelocity = (VELOCITY_FILTER_GAIN * filteredVelocity) +
+                ((1 - VELOCITY_FILTER_GAIN) * rawVelocity);
 
-        // 4. Calculate feedforward
-        double feedforward = kV * targetVelocity;
+        // 4. PID Calculation (using filtered velocity)
+        double pidOutput = shooterPIDF.calculateOutput(filteredVelocity);
 
-        // 5. Voltage compensation and power clamping
+        // 5. Feedforward
+        double feedforward = kV * TargetVelocity;
+
+        // 6. Combine and apply voltage compensation
         double targetPower = (feedforward + pidOutput) * (12.0 / currentVoltage);
-        targetPower = Math.max(-1.0, Math.min(1.0, targetPower));
 
-        // 6. Apply power to both motors
-        shooterMotors.setPower(targetPower);
+        // 7. Acceleration limiting (prevents sudden power spikes)
+        long currentTime = System.currentTimeMillis();
+        double dt = (currentTime - lastUpdateTime) / 1000.0;
+        if (dt > 0.001) {
+            double maxDeltaPower = (MAX_ACCEL_PER_LOOP * dt) / 1000.0;  // Convert to power units
+            double powerChange = targetPower - lastCommandedPower;
+
+            if (Math.abs(powerChange) > maxDeltaPower) {
+                targetPower = lastCommandedPower + Math.signum(powerChange) * maxDeltaPower;
+            }
+        }
+
+        // 8. Clamp and apply
+        targetPower = Math.max(-1.0, Math.min(1.0, targetPower));
+        shooter.setPower(targetPower);
+
+        // Update state
+        lastCommandedPower = targetPower;
+        lastUpdateTime = currentTime;
     }
 
-    /**
-     * Sets the target velocity for the shooter motors.
-     * NOTE: Motor velocity reads as negative when spinning in shooting direction.
-     * This method negates the target to match the motor's sign convention.
-     * @param target Target velocity magnitude in ticks per second (pass as positive, e.g., 1500)
-     */
     public void setTargetVelocity(double target) {
-        targetVelocity = -target;  // Negate to match motor sign convention
+        TargetVelocity = -target;
         shooterPIDF.setSetPoint(-target);
     }
 
-    /**
-     * Gets the current target velocity magnitude.
-     * @return Target velocity magnitude (positive value)
-     */
     public double getTargetVelocity() {
-        return -targetVelocity;  // Return positive magnitude for user display
+        return TargetVelocity;
+    }
+
+    public double getFilteredVelocity() {
+        return filteredVelocity;
     }
 
     /**
-     * Gets the current average velocity magnitude of both shooter motors.
-     * @return Current velocity magnitude (positive value)
+     * Returns true if the shooter is within AT_SPEED_TOLERANCE of target velocity
      */
-    public double getCurrentVelocity() {
-        return -shooterMotors.getVelocity();  // Return positive magnitude for user display
+    public boolean isAtSpeed() {
+        return Math.abs(TargetVelocity - filteredVelocity) <= AT_SPEED_TOLERANCE;
     }
 
     /**
-     * Gets the velocity magnitude of the leader motor.
-     * @return Leader motor velocity magnitude (positive value)
-     */
-    public double getLeaderVelocity() {
-        return -shooterMotors.getLeaderVelocity();
-    }
-
-    /**
-     * Gets the velocity magnitude of the follower motor.
-     * @return Follower motor velocity magnitude (positive value)
-     */
-    public double getFollowerVelocity() {
-        return -shooterMotors.getFollowerVelocity();
-    }
-
-    /**
-     * Gets the velocity error magnitude (target - actual).
-     * @return Velocity error magnitude (positive when below target)
+     * Returns the velocity error in ticks/sec
      */
     public double getVelocityError() {
-        return getTargetVelocity() - getCurrentVelocity();
-    }
-
-    /**
-     * Checks if the shooter is at the target velocity within a tolerance.
-     * @param tolerance Acceptable error in ticks per second
-     * @return True if within tolerance
-     */
-    public boolean atTargetVelocity(double tolerance) {
-        return Math.abs(getVelocityError()) < tolerance;
+        return Math.abs(TargetVelocity - filteredVelocity);
     }
 }
