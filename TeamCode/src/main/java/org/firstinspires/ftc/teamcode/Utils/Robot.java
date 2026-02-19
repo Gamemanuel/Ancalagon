@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
-import java.util.List;
-import com.qualcomm.hardware.lynx.LynxModule;
 import org.firstinspires.ftc.teamcode.Subsystems.*;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Commands.SixWheelCMD;
@@ -44,7 +42,7 @@ public class Robot {
      * This method MUST be called at the very start of every loop().
      */
     public void runPeriodic() {
-        // B. RUN SUBSYSTEM LOOPS
+        // Run the subsystems so the values don't get stale
         ll.periodic();
         shooterAutoCmd.execute();
         shooter.periodic();
