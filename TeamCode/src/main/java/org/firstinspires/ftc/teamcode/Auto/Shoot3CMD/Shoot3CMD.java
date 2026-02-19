@@ -18,8 +18,6 @@ public abstract class Shoot3CMD extends LinearOpMode {
     public static final long SHOT_DELAY_MS = 1000;
 
     private final Alliance alliance;
-    private Robot robot;
-    private AutoLibrary auto;
 
     public Shoot3CMD(Alliance alliance) {
         this.alliance = alliance;
@@ -29,8 +27,8 @@ public abstract class Shoot3CMD extends LinearOpMode {
     public void runOpMode() {
         // Setup
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        robot = new Robot(hardwareMap, alliance);
-        auto = new AutoLibrary(this, robot, alliance);
+        Robot robot = new Robot(hardwareMap, alliance);
+        AutoLibrary auto = new AutoLibrary(this, robot, alliance);
 
         waitForStart();
         if (isStopRequested()) return;

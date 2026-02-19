@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Utils.Alliance;
 import org.firstinspires.ftc.teamcode.Utils.Robot;
 
 @Config
-@TeleOp(name = "Shooter Tuning ADVANCED", group = "Tuning")
+@TeleOp(name = "Shooter Tuning DUAL FLYWHEEL", group = "Tuning")
 public class shooterTuningAdvanced extends LinearOpMode {
 
     // ===== STEP 1: Set your target velocity =====
@@ -40,24 +40,45 @@ public class shooterTuningAdvanced extends LinearOpMode {
             robot.shooter.setTargetVelocity(TESTING_TARGET_RPM);
             robot.shooter.periodic();
 
-            // ===== TELEMETRY FOR DASHBOARD GRAPHING =====
-            // These values will appear as live graphs in FTC Dashboard
-            telemetry.addData("Target Velocity", TESTING_TARGET_RPM);
-            telemetry.addData("Actual Velocity (Raw)", robot.shooter.shooter.getVelocity());
-            telemetry.addData("Actual Velocity (Filtered)", robot.shooter.getFilteredVelocity());
-            telemetry.addData("Error", robot.shooter.getVelocityError());
-            telemetry.addData("At Speed?", robot.shooter.isAtSpeed() ? "YES" : "NO");
+            // ===== PRIMARY METRICS =====
+            telemetry.addLine("╔═══════════════════════════════════╗");
+            telemetry.addLine("║     DUAL FLYWHEEL TELEMETRY       ║");
+            telemetry.addLine("╚═══════════════════════════════════╝");
+            telemetry.addData("Target Velocity", "%.0f ticks/sec", TESTING_TARGET_RPM);
+            telemetry.addData("Average Velocity", "%.0f ticks/sec", robot.shooter.getFilteredVelocity());
+            telemetry.addData("Error", "%.0f ticks/sec", robot.shooter.getVelocityError());
+            telemetry.addData("At Speed?", robot.shooter.isAtSpeed() ? "YES ✓" : "NO ✗");
 
-            telemetry.addData("---", "---");
-            telemetry.addData("Battery Voltage", hardwareMap.voltageSensor.iterator().next().getVoltage());
-            telemetry.addData("Motor Power", robot.shooter.shooter.getPower());
+            telemetry.addLine();
+            telemetry.addLine("───────── INDIVIDUAL MOTORS ─────────");
+            telemetry.addData("Left Motor", "%.0f ticks/sec", robot.shooter.getLeftVelocity());
+            telemetry.addData("Right Motor", "%.0f ticks/sec", robot.shooter.getRightVelocity());
+            telemetry.addData("Mismatch", "%.0f ticks/sec", robot.shooter.getVelocityMismatch());
 
-            // Current PID values
-            telemetry.addData("---", "PID VALUES (tune in dashboard)");
-            telemetry.addData("kP", robot.shooter.SCoeffs.p);
-            telemetry.addData("kI", robot.shooter.SCoeffs.i);
-            telemetry.addData("kD", robot.shooter.SCoeffs.d);
-            telemetry.addData("kV (Feedforward)", robot.shooter.kV);
+            // Motor sync warning
+            if (!robot.shooter.areMotorsSynced()) {
+                telemetry.addLine();
+                telemetry.addLine("WARNING: MOTORS OUT OF SYNC!");
+                telemetry.addLine("Check for mechanical issues:");
+                telemetry.addLine("  • Chain tension");
+                telemetry.addLine("  • Motor mounting");
+                telemetry.addLine("  • Flywheel balance");
+            }
+
+            telemetry.addLine();
+            telemetry.addLine("───────── SYSTEM STATUS ─────────");
+            telemetry.addData("Battery Voltage", "%.2fV", hardwareMap.voltageSensor.iterator().next().getVoltage());
+            telemetry.addData("Left Motor Power", "%.2f", robot.shooter.shooterLeft.getPower());
+            telemetry.addData("Right Motor Power", "%.2f", robot.shooter.shooterRight.getPower());
+
+            telemetry.addLine();
+            telemetry.addLine("───────── PID COEFFICIENTS ─────────");
+            telemetry.addLine("(Adjust these in FTC Dashboard)");
+            telemetry.addData("kP", "%.6f", robot.shooter.SCoeffs.p);
+            telemetry.addData("kI", "%.6f", robot.shooter.SCoeffs.i);
+            telemetry.addData("kD", "%.6f", robot.shooter.SCoeffs.d);
+            telemetry.addData("kV (Feedforward)", "%.6f", robot.shooter.kV);
+            telemetry.addData("Filter Gain", "%.2f", robot.shooter.VELOCITY_FILTER_GAIN);
 
             telemetry.update();
         }
@@ -65,45 +86,52 @@ public class shooterTuningAdvanced extends LinearOpMode {
 
     private void displayTuningInstructions() {
         telemetry.addLine("╔════════════════════════════════════════╗");
-        telemetry.addLine("║  SHOOTER TUNING GUIDE - FOLLOW STEPS  ║");
+        telemetry.addLine("║   DUAL FLYWHEEL TUNING GUIDE          ║");
         telemetry.addLine("╚════════════════════════════════════════╝");
         telemetry.addLine();
 
-        telemetry.addLine("📱 OPEN FTC DASHBOARD on your laptop:");
+        telemetry.addLine("OPEN FTC DASHBOARD:");
         telemetry.addLine("   → http://192.168.43.1:8080/dash");
         telemetry.addLine();
 
-        telemetry.addLine("STEP 1️⃣: TUNE kV (Feedforward)");
+        telemetry.addLine(" CRITICAL: Check Motor Sync First!");
+        telemetry.addLine("   • Both motors should spin same speed");
+        telemetry.addLine("   • Mismatch should be < 100 ticks/sec");
+        telemetry.addLine("   • If not, fix mechanical issues first!");
+        telemetry.addLine();
+
+        telemetry.addLine("STEP 1: TUNE kV (Feedforward)");
         telemetry.addLine("  • Set kP = 0, kI = 0, kD = 0");
-        telemetry.addLine("  • Adjust kV until velocity reaches ~90% of target");
-        telemetry.addLine("  • It will be close but not perfect - that's OK!");
+        telemetry.addLine("  • Adjust kV until average velocity");
+        telemetry.addLine("    reaches ~90% of target");
+        telemetry.addLine("  • Start with kV = 0.00169");
         telemetry.addLine();
 
-        telemetry.addLine("STEP 2️⃣: TUNE kP (Proportional)");
+        telemetry.addLine("STEP 2: TUNE kP (Proportional)");
         telemetry.addLine("  • Start with kP = -0.0001");
-        telemetry.addLine("  • Increase (more negative) until it oscillates");
-        telemetry.addLine("  • Then reduce kP by 30%");
-        telemetry.addLine("  • Graph should show quick approach without overshoot");
+        telemetry.addLine("  • Increase (more negative) slowly");
+        telemetry.addLine("  • Stop when you see oscillation");
+        telemetry.addLine("  • Reduce kP by 30%");
+        telemetry.addLine("  • Watch the GRAPH in dashboard!");
         telemetry.addLine();
 
-        telemetry.addLine("STEP 3️⃣: TUNE kD (Derivative)");
+        telemetry.addLine("STEP 2: TUNE kD (Derivative)");
         telemetry.addLine("  • Start with kD = kP * 0.1");
-        telemetry.addLine("  • Increase if you see oscillation");
-        telemetry.addLine("  • Decrease if response is sluggish");
-        telemetry.addLine("  • Smooths out the motion");
+        telemetry.addLine("  • Increase if oscillating");
+        telemetry.addLine("  • Decrease if sluggish");
         telemetry.addLine();
 
-        telemetry.addLine("STEP 4️⃣: TUNE kI (Integral) - OPTIONAL");
-        telemetry.addLine("  • Only if there's steady-state error");
-        telemetry.addLine("  • Start VERY small: kI = kP * 0.01");
-        telemetry.addLine("  • Increase slowly");
-        telemetry.addLine("  • ⚠️ Too much kI causes instability!");
+        telemetry.addLine("STEP 4️: TUNE kI (Integral) - OPTIONAL");
+        telemetry.addLine("  • Only if steady-state error exists");
+        telemetry.addLine("  • Start tiny: kI = kP * 0.01");
+        telemetry.addLine("  • ⚠️ Too much = unstable!");
         telemetry.addLine();
 
-        telemetry.addLine("🎯 GOAL:");
-        telemetry.addLine("  • Reach target in < 0.5 seconds");
-        telemetry.addLine("  • Error < ±50 ticks/sec");
-        telemetry.addLine("  • No oscillation");
+        telemetry.addLine(" SUCCESS CRITERIA:");
+        telemetry.addLine("  ✓ Reach target in < 0.5 seconds");
+        telemetry.addLine("  ✓ Error < ±50 ticks/sec");
+        telemetry.addLine("  ✓ No oscillation");
+        telemetry.addLine("  ✓ Motors stay synced");
         telemetry.addLine();
 
         telemetry.addLine("Press START when ready");
