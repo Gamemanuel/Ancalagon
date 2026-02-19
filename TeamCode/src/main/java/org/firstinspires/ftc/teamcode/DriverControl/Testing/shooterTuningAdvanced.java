@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Utils.Alliance;
 import org.firstinspires.ftc.teamcode.Utils.Robot;
 
 @Config
-@TeleOp(name = "⚙️ Shooter Tuning ADVANCED", group = "Tuning")
+@TeleOp(name = "Shooter Tuning ADVANCED", group = "Tuning")
 public class shooterTuningAdvanced extends LinearOpMode {
 
     // ===== STEP 1: Set your target velocity =====
@@ -42,15 +42,15 @@ public class shooterTuningAdvanced extends LinearOpMode {
 
             // ===== TELEMETRY FOR DASHBOARD GRAPHING =====
             // These values will appear as live graphs in FTC Dashboard
-            telemetry.addData("🎯 Target Velocity", TESTING_TARGET_RPM);
-            telemetry.addData("📈 Actual Velocity (Raw)", robot.shooter.shooter.getVelocity());
-            telemetry.addData("📉 Actual Velocity (Filtered)", robot.shooter.getFilteredVelocity());
-            telemetry.addData("❌ Error", robot.shooter.getVelocityError());
-            telemetry.addData("✅ At Speed?", robot.shooter.isAtSpeed() ? "YES" : "NO");
+            telemetry.addData("Target Velocity", TESTING_TARGET_RPM);
+            telemetry.addData("Actual Velocity (Raw)", robot.shooter.shooter.getVelocity());
+            telemetry.addData("Actual Velocity (Filtered)", robot.shooter.getFilteredVelocity());
+            telemetry.addData("Error", robot.shooter.getVelocityError());
+            telemetry.addData("At Speed?", robot.shooter.isAtSpeed() ? "YES" : "NO");
 
             telemetry.addData("---", "---");
-            telemetry.addData("🔋 Battery Voltage", hardwareMap.voltageSensor.iterator().next().getVoltage());
-            telemetry.addData("⚡ Motor Power", robot.shooter.shooter.getPower());
+            telemetry.addData("Battery Voltage", hardwareMap.voltageSensor.iterator().next().getVoltage());
+            telemetry.addData("Motor Power", robot.shooter.shooter.getPower());
 
             // Current PID values
             telemetry.addData("---", "PID VALUES (tune in dashboard)");

@@ -48,27 +48,27 @@ public class ShooterSubsystem {
     }
 
     public void periodic() {
-        // 1. Update Coefficients (allows live tuning)
+        // Update Coefficients (allows live tuning)
         shooterPIDF.setCoefficients(SCoeffs);
 
-        // 2. Get Current State
+        // Get Current State
         double rawVelocity = shooter.getVelocity();
         double currentVoltage = batteryVoltageSensor.getVoltage();
 
-        // 3. Apply velocity filtering (exponential moving average)
+        // Apply velocity filtering (exponential moving average)
         filteredVelocity = (VELOCITY_FILTER_GAIN * filteredVelocity) +
                 ((1 - VELOCITY_FILTER_GAIN) * rawVelocity);
 
-        // 4. PID Calculation (using filtered velocity)
+        // PID Calculation (using filtered velocity)
         double pidOutput = shooterPIDF.calculateOutput(filteredVelocity);
 
-        // 5. Feedforward
+        // Feedforward
         double feedforward = kV * TargetVelocity;
 
-        // 6. Combine and apply voltage compensation
+        // Combine and apply voltage compensation
         double targetPower = (feedforward + pidOutput) * (12.0 / currentVoltage);
 
-        // 7. Acceleration limiting (prevents sudden power spikes)
+        // Acceleration limiting (prevents sudden power spikes)
         long currentTime = System.currentTimeMillis();
         double dt = (currentTime - lastUpdateTime) / 1000.0;
         if (dt > 0.001) {

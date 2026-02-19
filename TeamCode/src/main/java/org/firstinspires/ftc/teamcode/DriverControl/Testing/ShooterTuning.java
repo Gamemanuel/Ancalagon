@@ -44,16 +44,16 @@ public class ShooterTuning extends LinearOpMode {
 
             // 3. Telemetry for Graphing and Tuning
             telemetry.addData("Target Velocity", TESTING_TARGET_RPM);
-            telemetry.addData("Average Velocity", robot.shooter.getCurrentVelocity());
-            telemetry.addData("Leader Velocity", robot.shooter.getLeaderVelocity());
-            telemetry.addData("Follower Velocity", robot.shooter.getFollowerVelocity());
+//            telemetry.addData("Average Velocity", robot.shooter.getCurrentVelocity());
+//            telemetry.addData("Leader Velocity", robot.shooter.getLeaderVelocity());
+//            telemetry.addData("Follower Velocity", robot.shooter.getFollowerVelocity());
             telemetry.addData("Velocity Error", robot.shooter.getVelocityError());
 
             // Show the tuning parameters
             telemetry.addData("kV", ShooterSubsystem.kV);
-            telemetry.addData("kP", ShooterSubsystem.kP);
-            telemetry.addData("kI", ShooterSubsystem.kI);
-            telemetry.addData("kD", ShooterSubsystem.kD);
+//            telemetry.addData("kP", ShooterSubsystem.kP);
+//            telemetry.addData("kI", ShooterSubsystem.kI);
+//            telemetry.addData("kD", ShooterSubsystem.kD);
 
 
 

@@ -49,8 +49,9 @@ public class AutoLibrary {
 
     /**
      * Drive to a specific distance using Limelight
+     *
      * @param targetDistanceInches Target distance from goal
-     * @param power Base drive power (will be modulated)
+     * @param power                Base drive power (will be modulated)
      * @return true if successful, false if timeout
      */
     public boolean driveToDistance(double targetDistanceInches, double power) {
@@ -76,7 +77,7 @@ public class AutoLibrary {
             drivePower = Math.max(-MAX_DRIVE_POWER, Math.min(MAX_DRIVE_POWER, drivePower));
             drivePower *= power;  // Scale by requested power
 
-            robot.sixWheelCMD.arcadeDrive((float)drivePower, 0);
+            robot.sixWheelCMD.arcadeDrive((float) drivePower, 0);
             runSubsystems();
 
             telemetry().addData("Phase", "Driving to Distance");
@@ -99,6 +100,7 @@ public class AutoLibrary {
 
     /**
      * Turn the robot chassis to center on an AprilTag (TX = 0)
+     *
      * @return true if successful, false if timeout
      */
     public boolean turnToAprilTag() {
@@ -128,7 +130,7 @@ public class AutoLibrary {
             // Clamp
             turnPower = Math.max(-MAX_TURN_POWER, Math.min(MAX_TURN_POWER, turnPower));
 
-            robot.sixWheelCMD.arcadeDrive(0, (float)turnPower);
+            robot.sixWheelCMD.arcadeDrive(0, (float) turnPower);
             previousError = tx;
 
             telemetry().addData("Phase", "Turning to AprilTag");
@@ -147,6 +149,7 @@ public class AutoLibrary {
 
     /**
      * Wait for shooter to reach target velocity
+     *
      * @param targetVelocity Desired shooter velocity
      * @param toleranceTicks Acceptable error in ticks/sec
      * @return true if at speed, false if timeout
@@ -178,7 +181,8 @@ public class AutoLibrary {
 
     /**
      * Shoot a single ball and wait for velocity recovery
-     * @param pushDurationMs How long to run intake to push ball
+     *
+     * @param pushDurationMs  How long to run intake to push ball
      * @param recoveryDelayMs How long to wait before next ball
      */
     public void shootBall(long pushDurationMs, long recoveryDelayMs) {
@@ -201,8 +205,9 @@ public class AutoLibrary {
 
     /**
      * Shoot multiple balls in sequence
-     * @param ballCount Number of balls to shoot
-     * @param pushDurationMs Duration of each push
+     *
+     * @param ballCount       Number of balls to shoot
+     * @param pushDurationMs  Duration of each push
      * @param recoveryDelayMs Delay between shots
      */
     public void shootMultipleBalls(int ballCount, long pushDurationMs, long recoveryDelayMs) {
@@ -211,7 +216,7 @@ public class AutoLibrary {
         for (int i = 1; i <= ballCount; i++) {
             if (!opMode.opModeIsActive()) break;
 
-            telemetry().addData("🎯 Phase", "Shooting Ball " + i + "/" + ballCount);
+            telemetry().addData("Phase", "Shooting Ball " + i + "/" + ballCount);
             telemetry().update();
 
             shootBall(pushDurationMs, recoveryDelayMs);
@@ -254,4 +259,6 @@ public class AutoLibrary {
     private org.firstinspires.ftc.robotcore.external.Telemetry telemetry() {
         return opMode.telemetry;
     }
+
+
 }
