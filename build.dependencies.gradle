@@ -20,5 +20,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
 
     implementation 'com.acmerobotics.dashboard:dashboard:0.5.1'
+    implementation 'com.bylazar:fullpanels:1.0.12'
+    implementation "org.solverslib:core:0.3.4" // core
 }
 

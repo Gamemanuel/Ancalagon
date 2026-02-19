@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
-import java.util.List;
-import com.qualcomm.hardware.lynx.LynxModule;
 import org.firstinspires.ftc.teamcode.Subsystems.*;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Commands.SixWheelCMD;
@@ -28,7 +26,7 @@ public class Robot {
         this.alliance = alliance;
 
         // 2. INITIALIZE SUBSYSTEMS
-        drivetrain = new Drivetrain(hardwareMap);
+//        drivetrain = new Drivetrain(hardwareMap);
         intake = new Intake(hardwareMap);
         turretSubsystem = new TurretSubsystem(hardwareMap);
         ll = new LLSubsystem(hardwareMap, alliance);

@@ -17,10 +17,6 @@ public abstract class Shoot3CMD extends LinearOpMode {
     public static final long PUSH_DURATION_MS = 600;
     public static final long SHOT_DELAY_MS = 1000;
 
-    // Flipper/Servo Positions
-    public static final double FLIPPER_STOW_POS = 0.0;
-    public static final double FLIPPER_SHOOT_POS = 0.75;
-
     // Turret
     public static final double TURRET_TOLERANCE = 1.5;
     public static final double TURRET_SHOOT_SPEED = 0.2;
@@ -37,8 +33,6 @@ public abstract class Shoot3CMD extends LinearOpMode {
     public void runOpMode() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot = new Robot(hardwareMap, alliance);
-
-        robot.intake.floop.setPosition(FLIPPER_STOW_POS);
 
         waitForStart();
 
@@ -66,7 +60,7 @@ public abstract class Shoot3CMD extends LinearOpMode {
             runSubsystems(); // Updates PID and Vision
 
             double target = robot.shooter.getTargetVelocity();
-            double actual = robot.shooter.shooter.getVelocity();
+            double actual = robot.shooter.shooterMotors.getVelocity();
 
             if (Math.abs(target - actual) <= SHOOTER_TOLERANCE) {
                 break;
@@ -81,7 +75,7 @@ public abstract class Shoot3CMD extends LinearOpMode {
         // =================================================================
         safeWait(PUSH_DURATION_MS);
         if (opModeIsActive()) {
-            robot.intake.front.setPower(-1.0);
+            robot.intake.intake.setPower(-1.0);
 
             for (int i = 1; i <= 3; i++) {
                 if (!opModeIsActive()) break;
@@ -89,33 +83,25 @@ public abstract class Shoot3CMD extends LinearOpMode {
                 telemetry.update();
 
                 // --- FIRE THE BALL ---
-                if (i <= 2) {
-                    // Ball 1 & 2: Push with intake roller
-                    safeWait(PUSH_DURATION_MS);
-                } else {
-                    // Ball 3: Push with flipper
-                    robot.intake.floop.setPosition(FLIPPER_SHOOT_POS);
-                    safeWait(PUSH_DURATION_MS);
-                    robot.intake.floop.setPosition(FLIPPER_STOW_POS);
-                }
+                safeWait(PUSH_DURATION_MS);
 
                 // --- RECOVERY ---
-                robot.intake.front.setPower(0); // Stop feeding
+                robot.intake.intake.setPower(0); // Stop feeding
 
                 // 1. Wait for the fixed delay (keeping PID active!)
                 safeWait(SHOT_DELAY_MS);
 
                 // 2. (Optional but Recommended) Wait until velocity recovers exactly
-                while (Math.abs(robot.shooter.getTargetVelocity() - robot.shooter.shooter.getVelocity()) > SHOOTER_TOLERANCE && opModeIsActive()) {
+                while (Math.abs(robot.shooter.getTargetVelocity() - robot.shooter.shooterMotors.getVelocity()) > SHOOTER_TOLERANCE && opModeIsActive()) {
                     runSubsystems();
                     telemetry.addData("Phase", "Recovering Speed...");
-                    telemetry.addData("Err", robot.shooter.getTargetVelocity() - robot.shooter.shooter.getVelocity());
+                    telemetry.addData("Err", robot.shooter.getTargetVelocity() - robot.shooter.shooterMotors.getVelocity());
                     telemetry.update();
                 }
 
                 // Turn intake back on for the next ball
                 if (i < 3) {
-                    robot.intake.front.setPower(-1.0);
+                    robot.intake.intake.setPower(-1.0);
                 }
             }
         }
@@ -123,8 +109,7 @@ public abstract class Shoot3CMD extends LinearOpMode {
         // =================================================================
         // PHASE 4: Stop
         // =================================================================
-        robot.intake.front.setPower(0);
-        robot.intake.floop.setPosition(FLIPPER_STOW_POS);
+        robot.intake.intake.setPower(0);
         robot.shooter.setTargetVelocity(0);
         robot.turretSubsystem.setPower(0);
         robot.sixWheelCMD.arcadeDrive(0,0);
