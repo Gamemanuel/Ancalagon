@@ -15,7 +15,7 @@ public class Robot {
     public LLSubsystem ll;
     public ShooterSubsystem shooter;
 
-    // Commands / Logic
+    // Commands
     public TurretAutoLLCMD turretAuto;
     public ShooterAutoLLCMD shooterAutoCmd;
     public SixWheelCMD sixWheelCMD;
@@ -25,14 +25,14 @@ public class Robot {
     public Robot(HardwareMap hardwareMap, Alliance alliance) {
         this.alliance = alliance;
 
-        // 2. INITIALIZE SUBSYSTEMS
-//        drivetrain = new Drivetrain(hardwareMap);
+        // subsystems
+        drivetrain = new Drivetrain(hardwareMap);
         intake = new Intake(hardwareMap);
         turretSubsystem = new TurretSubsystem(hardwareMap);
         ll = new LLSubsystem(hardwareMap, alliance);
         shooter = new ShooterSubsystem(hardwareMap);
 
-        // 3. INITIALIZE COMMANDS
+        // commands
         turretAuto = new TurretAutoLLCMD(turretSubsystem, ll);
         shooterAutoCmd = new ShooterAutoLLCMD(shooter, ll);
         sixWheelCMD = new SixWheelCMD(drivetrain);
@@ -42,7 +42,6 @@ public class Robot {
      * This method MUST be called at the very start of every loop().
      */
     public void runPeriodic() {
-        // B. RUN SUBSYSTEM LOOPS
         ll.periodic();
         shooterAutoCmd.execute();
         shooter.periodic();

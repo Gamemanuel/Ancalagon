@@ -35,7 +35,7 @@ public abstract class TeleOp extends OpMode {
         robot.ll.periodic();
 
         // run the drivetrain drive code.
-//        robot.sixWheelCMD.arcadeDrive(gamepad1.left_stick_y, gamepad1.right_stick_x);
+        robot.sixWheelCMD.arcadeDrive(gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         // --- Intake ---
         robot.intake.intake.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
@@ -72,7 +72,7 @@ public abstract class TeleOp extends OpMode {
         // Telemetry
         telemetry.addData("Shooter Mode", shooterManualOverride ? "MANUAL" : "AUTO");
         telemetry.addData("Shooter Target", robot.shooter.getTargetVelocity());
-        telemetry.addData("Shooter Actual", robot.shooter.shooterMotors.getVelocity());
+        telemetry.addData("Shooter Actual", robot.shooter.getCurrentVelocity());
 
         telemetry.update();
 
