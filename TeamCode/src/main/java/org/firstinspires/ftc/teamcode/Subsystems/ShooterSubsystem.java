@@ -26,9 +26,8 @@ public class ShooterSubsystem {
 
     // PIDF Coefficients - Tunable via FTC Dashboard
     // NOTE: The original implementation used negative coefficients because the motor velocity
-    // reads as negative when spinning in the shooting direction. This is preserved to maintain
-    // the original control behavior. If you reverse motor direction or change hardware config,
-    // you may need to flip these signs. The PID formula is: output = kP*error + kI*integral + kD*derivative
+    // reads as negative when spinning in the shooting direction. I may need to flip these signs.
+    // The PID formula is: output = kP*error + kI*integral + kD*derivative
     // where error = setpoint - measured. With negative gains, positive error produces negative correction.
     public static double kP = -0.00055;
     public static double kI = 0.0;
