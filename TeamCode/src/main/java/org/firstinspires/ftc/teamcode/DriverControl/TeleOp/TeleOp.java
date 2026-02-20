@@ -25,7 +25,7 @@ public abstract class TeleOp extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         gamepad2Ex = new GamepadEx();
-        gamepad2Ex.buttons.add(shooterToggleButton = new ButtonEx(gamepad2.y));
+        gamepad2Ex.buttons.add(shooterToggleButton = new ButtonEx(() -> gamepad2.y));
         // call the subsystems
         robot = new Robot(hardwareMap, alliance);
     }

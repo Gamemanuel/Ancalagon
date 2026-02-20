@@ -25,7 +25,7 @@ public class ShooterSubsystem {
     private double targetVelocity = 0;
 
     // PIDF Coefficients - Tunable via FTC Dashboard
-    // NOTE: The original implementation used negative coefficients because the motor velocity
+    // NOTE: This implementation uses negative coefficients because the motor velocity
     // reads as negative when spinning in the shooting direction. This is preserved to maintain
     // the original control behavior. If you reverse motor direction or change hardware config,
     // you may need to flip these signs. The PID formula is: output = kP*error + kI*integral + kD*derivative
@@ -36,7 +36,7 @@ public class ShooterSubsystem {
     public static double kF = 0.0;
     
     // Feedforward gain for velocity control
-    public static double kV = 0.00169;
+    public static double kV = 0.00175;
     
     // Integration bounds to prevent windup
     public static double INTEGRAL_MIN = -0.5;
@@ -44,8 +44,8 @@ public class ShooterSubsystem {
 
     public ShooterSubsystem(HardwareMap hMap) {
         // Initialize both shooter motors
-        shooterLeader = hMap.get(DcMotorEx.class, "shooter");
-        shooterFollower = hMap.get(DcMotorEx.class, "shooter2");
+        shooterLeader = hMap.get(DcMotorEx.class, "shooterLeft");
+        shooterFollower = hMap.get(DcMotorEx.class, "shooterRight");
         
         // Reset encoders
         shooterLeader.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -60,11 +60,11 @@ public class ShooterSubsystem {
                 shooterLeader,
                 shooterFollower,
                 DcMotorSimple.Direction.FORWARD,
-                DcMotorSimple.Direction.FORWARD
+                DcMotorSimple.Direction.REVERSE
         );
         
-        // Use average velocity from both motors for smoother control
-        shooterMotors.setPositionType(PositionType.AVERAGE);
+        // our leader is the only one that works properly so we init it here
+        shooterMotors.setPositionType(PositionType.LEADER);
 
         // Initialize voltage sensor
         batteryVoltageSensor = hMap.voltageSensor.iterator().next();
@@ -117,7 +117,7 @@ public class ShooterSubsystem {
      * @return Target velocity magnitude (positive value)
      */
     public double getTargetVelocity() {
-        return -targetVelocity;  // Return positive magnitude for user display
+        return targetVelocity;  // Return positive magnitude for user display
     }
 
     /**
@@ -125,23 +125,23 @@ public class ShooterSubsystem {
      * @return Current velocity magnitude (positive value)
      */
     public double getCurrentVelocity() {
-        return -shooterMotors.getVelocity();  // Return positive magnitude for user display
+        return shooterMotors.getVelocity();  // Return positive magnitude for user display
     }
 
     /**
      * Gets the velocity magnitude of the leader motor.
-     * @return Leader motor velocity magnitude (positive value)
+     * @return Leader motor velocity magnitude (negative value)
      */
     public double getLeaderVelocity() {
-        return -shooterMotors.getLeaderVelocity();
+        return shooterMotors.getLeaderVelocity();
     }
 
     /**
      * Gets the velocity magnitude of the follower motor.
-     * @return Follower motor velocity magnitude (positive value)
+     * @return Follower motor velocity magnitude (negative value)
      */
     public double getFollowerVelocity() {
-        return -shooterMotors.getFollowerVelocity();
+        return shooterMotors.getFollowerVelocity();
     }
 
     /**
@@ -160,4 +160,5 @@ public class ShooterSubsystem {
     public boolean atTargetVelocity(double tolerance) {
         return Math.abs(getVelocityError()) < tolerance;
     }
+
 }

@@ -38,8 +38,6 @@ public abstract class Shoot3CMDClose extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot = new Robot(hardwareMap, alliance);
 
-        robot.intake.floop.setPosition(FLIPPER_STOW_POS);
-
         waitForStart();
 
         if (isStopRequested()) return;
@@ -82,26 +80,17 @@ public abstract class Shoot3CMDClose extends LinearOpMode {
         safeWait(8000);
         safeWait(PUSH_DURATION_MS);
         if (opModeIsActive()) {
-            robot.intake.front.setPower(-1.0);
+            robot.intake.intake.setPower(-1.0);
 
             for (int i = 1; i <= 3; i++) {
                 if (!opModeIsActive()) break;
                 telemetry.addData("Phase", "3. Shooting Ball " + i);
                 telemetry.update();
+                    safeWait(PUSH_DURATION_MS);
 
-                // --- FIRE THE BALL ---
-                if (i <= 2) {
-                    // Ball 1 & 2: Push with intake roller
-                    safeWait(PUSH_DURATION_MS);
-                } else {
-                    // Ball 3: Push with flipper
-                    robot.intake.floop.setPosition(FLIPPER_SHOOT_POS);
-                    safeWait(PUSH_DURATION_MS);
-                    robot.intake.floop.setPosition(FLIPPER_STOW_POS);
-                }
 
                 // --- RECOVERY ---
-                robot.intake.front.setPower(0); // Stop feeding
+                robot.intake.intake.setPower(0); // Stop feeding
 
                 // 1. Wait for the fixed delay (keeping PID active!)
                 safeWait(SHOT_DELAY_MS);
@@ -116,7 +105,7 @@ public abstract class Shoot3CMDClose extends LinearOpMode {
 
                 // Turn intake back on for the next ball
                 if (i < 3) {
-                    robot.intake.front.setPower(-1.0);
+                    robot.intake.intake.setPower(-1.0);
                 }
             }
         }
@@ -124,8 +113,7 @@ public abstract class Shoot3CMDClose extends LinearOpMode {
         // =================================================================
         // PHASE 4: Stop
         // =================================================================
-        robot.intake.front.setPower(0);
-        robot.intake.floop.setPosition(FLIPPER_STOW_POS);
+        robot.intake.intake.setPower(0);
         robot.shooter.setTargetVelocity(0);
         robot.turretSubsystem.setPower(0);
         robot.sixWheelCMD.arcadeDrive(0,0);

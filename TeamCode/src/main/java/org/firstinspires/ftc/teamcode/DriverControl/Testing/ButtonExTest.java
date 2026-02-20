@@ -11,7 +11,7 @@ public class ButtonExTest extends OpMode {
 
     public void init() {
         gamepadEx = new GamepadEx();
-        gamepadEx.buttons.add(A = new ButtonEx(gamepad1.a));
+        gamepadEx.buttons.add(A = new ButtonEx(() -> gamepad2.a));
     }
 
     public void loop() {
