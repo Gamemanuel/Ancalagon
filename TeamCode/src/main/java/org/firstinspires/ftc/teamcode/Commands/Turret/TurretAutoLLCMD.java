@@ -12,106 +12,69 @@ public class TurretAutoLLCMD {
     TurretSubsystem turret;
     LLSubsystem ll;
 
-    // PID Values (Now tunable via dashboard!)
-    public static double kP = 0.025;      // Proportional: How aggressive to correct error
-    public static double kD = 0.008;      // Derivative: Dampens oscillation, smooths motion
-    public static double kStatic = 0.15;  // Static friction overcome
-    public static double DEADZONE = 0.5;  // Degrees - stops micro-adjustments
-
-    // Last Known Position Tracking
-    private double lastKnownTx = 0.0;
-    private long lastTargetFoundTime = 0;
-    private double previousError = 0.0;
-    private long previousTime = 0;
-
-    // Timeout for last known position (milliseconds)
-    public static long PREDICTION_TIMEOUT_MS = 1500;
-
-    public double offset = 0.0;
+    // ===== TUNING PARAMETERS (Adjust in FTC Dashboard) =====
+    public static double kP = 0.02;              // How aggressive to turn (start small!)
+    public static double MIN_POWER = 0.12;       // Minimum power to overcome friction
+    public static double MAX_POWER = 0.6;        // Maximum power for safety
+    public static double DEADZONE = 1.0;         // Stop moving if error < this (degrees)
 
     public TurretAutoLLCMD(TurretSubsystem turret, LLSubsystem ll) {
         this.turret = turret;
         this.ll = ll;
-        this.previousTime = System.currentTimeMillis();
     }
 
+    /**
+     * @param tolerance How close is "good enough" (degrees)
+     * @param alliance Which alliance (RED or BLUE)
+     */
     public void faceAprilTag(double tolerance, Alliance alliance) {
-        // Switch pipeline based on alliance
+        // 1. Switch to correct pipeline
         if (alliance == Alliance.RED) {
             ll.limelight.pipelineSwitch(3);
         } else {
             ll.limelight.pipelineSwitch(2);
         }
 
+        // 2. Get latest limelight result
         LLResult result = ll.limelight.getLatestResult();
-        long currentTime = System.currentTimeMillis();
-        double tx = 0.0;
-        boolean usingPrediction = false;
 
-        // --- STEP 1: Determine tracking error (TX) ---
-        if (result != null && result.isValid()) {
-            // Fresh target data!
-            tx = result.getTx() + offset;
-            lastKnownTx = tx;
-            lastTargetFoundTime = currentTime;
-        } else {
-            // Target lost! Use last known position if recent enough
-            long timeSinceLastSeen = currentTime - lastTargetFoundTime;
-
-            if (timeSinceLastSeen < PREDICTION_TIMEOUT_MS && lastKnownTx != 0.0) {
-                // Use the last known TX to continue tracking
-                tx = lastKnownTx;
-                usingPrediction = true;
-            } else {
-                // Target lost for too long - stop
-                turret.setPower(0);
-                return;
-            }
+        // 3. Check if we have a valid target
+        if (result == null || !result.isValid()) {
+            // NO TARGET - stop moving
+            turret.setPower(0);
+            return;
         }
 
-        // --- STEP 2: Check if within tolerance + deadzone ---
+        // 4. Get the error (how far off we are)
+        double tx = result.getTx();  // Positive = target is to the right
+
+        // 5. If we're close enough, stop
         if (Math.abs(tx) <= Math.max(tolerance, DEADZONE)) {
             turret.setPower(0);
             return;
         }
 
-        // --- STEP 3: Calculate PID Control ---
-        // P Term
-        double pTerm = tx * kP;
+        // 6. Calculate power using simple P control
+        double power = tx * kP;
 
-        // D Term (rate of change of error)
-        double dt = (currentTime - previousTime) / 1000.0; // seconds
-        double dTerm = 0.0;
-        if (dt > 0.001) { // Avoid division by very small numbers
-            double errorRate = (tx - previousError) / dt;
-            dTerm = errorRate * kD;
+        // 7. Add minimum power to overcome friction
+        //    (only if we're outside the deadzone)
+        if (Math.abs(power) < MIN_POWER) {
+            power = Math.signum(tx) * MIN_POWER;
         }
 
-        // Feedforward (overcome static friction)
-        double ffTerm = Math.signum(tx) * kStatic;
+        // 8. Clamp to max power for safety
+        power = Math.max(-MAX_POWER, Math.min(MAX_POWER, power));
 
-        // Combine
-        double power = pTerm + dTerm + ffTerm;
-
-        // Clamp power to safe range
-        power = Math.max(-0.8, Math.min(0.8, power));
-
-        // --- STEP 4: Apply Power ---
-        turret.setPower(-power); // Negative sign may depend on your motor direction
-
-        // Update state for next loop
-        previousError = tx;
-        previousTime = currentTime;
+        // 9. Send power to motor
+        // NOTE: Negative sign might be needed depending on your motor direction
+        turret.setPower(-power);
     }
 
     /**
-     * Resets the last known position tracking.
-     * Call this when starting a new auto routine or when you want to clear history.
+     * Emergency stop
      */
-    public void reset() {
-        lastKnownTx = 0.0;
-        lastTargetFoundTime = 0;
-        previousError = 0.0;
-        previousTime = System.currentTimeMillis();
+    public void stop() {
+        turret.setPower(0);
     }
 }

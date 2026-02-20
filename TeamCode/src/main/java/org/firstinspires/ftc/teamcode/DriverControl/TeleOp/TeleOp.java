@@ -26,7 +26,7 @@ public abstract class TeleOp extends OpMode {
 
         // Setup the gamepadEx variable
         gamepad2Ex = new GamepadEx();
-        gamepad2Ex.buttons.add(shooterToggleButton = new ButtonEx(gamepad2.y));
+        gamepad2Ex.buttons.add(shooterToggleButton = new ButtonEx(() -> gamepad2.y));
 
         // Call the subsystems
         robot = new Robot(hardwareMap, alliance);
@@ -71,16 +71,13 @@ public abstract class TeleOp extends OpMode {
         // Toggle Manual override w/ Y button on gamepad2
         if (shooterToggleButton.wasJustPressed()) {
             shooterManualOverride = !shooterManualOverride;
+            gamepad2.rumble(100);  // Haptic feedback
         }
 
         // Manual mode
         if (shooterManualOverride) {
-
-            robot.shooter.shooterMotors.setPower(-gamepad2.right_stick_y);
-        }
-
-        // Automatic Mode
-        else {
+            robot.shooter.shooterGroup.setPower(-gamepad2.right_stick_y);
+        } else {
             // Run the auto subsystem
             robot.shooterAutoCmd.execute();
 
@@ -95,7 +92,7 @@ public abstract class TeleOp extends OpMode {
         // Telemetry
         telemetry.addData("Shooter Mode", shooterManualOverride ? "MANUAL" : "AUTO"); // fetch the shooting mode?
         telemetry.addData("Shooter Target", robot.shooter.getTargetVelocity()); // fetch shooter target velocity
-        telemetry.addData("Shooter Actual", robot.shooter.getCurrentVelocity()); // fetch shooter actual velocity
+        telemetry.addData("Shooter Actual", robot.shooter.getFilteredVelocity()); // fetch shooter actual velocity
 
         // update static variables
         telemetry.update();
