@@ -62,6 +62,11 @@ public class SixWheelCMD {
         rightSide.setPower((double) rightPower);
     }
 
+    public void setMotors(float left, float right) {
+        drivetrain.leftSide.setPower(left);
+        drivetrain.rightSide.setPower(right);
+    }
+
     // --- Arcade Drive Constructors ---
     public void arcadeDrive(float forward, float turn) {
         setMotors(drivetrain.leftSide, drivetrain.rightSide, forward - turn, forward + turn);
@@ -71,4 +76,24 @@ public class SixWheelCMD {
         setMotors(leftSide, rightSide, left, right);
     }
 
+    public void encoderDrive(float left, float right, double pos, double tolerance) {
+        double origDiff = drivetrain.leftSide.getPosition() - pos;
+        double difference = drivetrain.leftSide.getPosition() - pos;
+        while (Math.abs(difference) > tolerance) {
+            difference = drivetrain.leftSide.getPosition() - pos;
+            if (difference > 0) {
+                if (difference <= origDiff / 2) {
+                    setMotors(-left / 2, -right / 2);
+                } else {
+                    setMotors(-left, -right);
+                }
+            } else {
+                if (difference >= origDiff / 2) {
+                    setMotors(left / 2, right / 2);
+                } else {
+                    setMotors(left, right);
+                }
+            }
+        }
+    }
 }
