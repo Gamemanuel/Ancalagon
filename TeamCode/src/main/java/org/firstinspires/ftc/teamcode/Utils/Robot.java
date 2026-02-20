@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Utils;
 
 import org.firstinspires.ftc.teamcode.Subsystems.*;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.Commands.SixWheelCMD;
+import org.firstinspires.ftc.teamcode.Commands.Drivetrain.SixWheelCMD;
 import org.firstinspires.ftc.teamcode.Commands.Turret.TurretAutoLLCMD;
 import org.firstinspires.ftc.teamcode.Commands.Shooter.ShooterAutoLLCMD;
 
